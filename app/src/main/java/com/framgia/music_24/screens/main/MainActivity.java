@@ -18,6 +18,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import com.framgia.music_24.R;
+import com.framgia.music_24.screens.discover.DiscoverFragment;
+import com.framgia.music_24.utils.DisplayUtils;
 
 import static com.framgia.music_24.utils.SearchViewAnimate.animateSearchToolbar;
 
@@ -65,6 +67,9 @@ public class MainActivity extends AppCompatActivity
         mDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
         mNavigationView.setNavigationItemSelectedListener(this);
+        //Add Discover Fragment
+        DisplayUtils.addFragment(getSupportFragmentManager(), DiscoverFragment.newInstance(),
+                R.id.frame_main_layout, DiscoverFragment.TAG);
     }
 
     private void initViews() {
