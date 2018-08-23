@@ -14,4 +14,6 @@
     <string name="search_view_query_text">Query</string>
     <string name="search_view_height_suggestion">0.5dp</string>
     <string name="bias_suggestion_view">0.13</string>
+    <string name="bias_avatar_navigation">0.5</string>
+    <string name="bias_text_view_name_navigation">0.45</string>
 </resources>
