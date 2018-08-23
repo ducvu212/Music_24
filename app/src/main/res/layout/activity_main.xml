@@ -49,6 +49,12 @@
 
         </android.support.design.widget.AppBarLayout>
 
+        <FrameLayout
+            android:id="@+id/frame_main_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="?attr/actionBarSize"/>
+
     </android.support.design.widget.CoordinatorLayout>
 
     <android.support.design.widget.NavigationView
