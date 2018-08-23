@@ -2,7 +2,6 @@ package com.framgia.music_24.utils;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -29,6 +28,8 @@ public class SearchViewAnimate {
     private static final int DURATION = 250;
     private static final int TWO = 2;
     private static final int ZERO = 0;
+    private static Toolbar mToolbar;
+    private static Context mContext;
 
     public static void animateSearchToolbar(final Context context, int numberOfMenuIcon,
             boolean containsOverflow, boolean show, final Toolbar toolbar,
@@ -36,83 +37,98 @@ public class SearchViewAnimate {
 
         toolbar.setBackgroundColor(ContextCompat.getColor(context, android.R.color.white));
         drawerLayout.setStatusBarBackgroundColor(
-                ContextCompat.getColor(context, R.color.quantum_grey_600));
-
+                ContextCompat.getColor(context, R.color.color_gray_600));
+        mToolbar = toolbar;
+        mContext = context;
         if (show) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                @SuppressLint("PrivateResource") int width =
-                        toolbar.getWidth() - (containsOverflow ? context.getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen.abc_action_button_min_width_overflow_material)
-                                : ZERO) - ((context.getResources()
-                                .getDimensionPixelSize(R.dimen.abc_action_button_min_width_material)
-                                * numberOfMenuIcon) / TWO);
-                Animator createCircularReveal = ViewAnimationUtils.createCircularReveal(toolbar,
-                        isRtl(context.getResources()) ? toolbar.getWidth() - width : width,
-                        toolbar.getHeight() / TWO, MIN_ALPHA, (float) width);
-                createCircularReveal.setDuration(DURATION);
-                createCircularReveal.start();
+            if (isHigherLolipop()) {
+                setupToolbarAnimate(containsOverflow, numberOfMenuIcon, MIN_ALPHA, drawerLayout);
             } else {
-                TranslateAnimation translateAnimation =
-                        new TranslateAnimation(MIN_ALPHA, MIN_ALPHA, (float) (-toolbar.getHeight()),
-                                MIN_ALPHA);
-                translateAnimation.setDuration(DURATION);
-                toolbar.clearAnimation();
-                toolbar.startAnimation(translateAnimation);
+                setupTransition();
             }
         } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                @SuppressLint("PrivateResource") int width =
-                        toolbar.getWidth() - (containsOverflow ? context.getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen.abc_action_button_min_width_overflow_material)
-                                : ZERO) - ((context.getResources()
-                                .getDimensionPixelSize(R.dimen.abc_action_button_min_width_material)
-                                * numberOfMenuIcon) / TWO);
-                Animator createCircularReveal = ViewAnimationUtils.createCircularReveal(toolbar,
-                        isRtl(context.getResources()) ? toolbar.getWidth() - width : width,
-                        toolbar.getHeight() / TWO, (float) width, MIN_ALPHA);
-                createCircularReveal.setDuration(DURATION);
-                createCircularReveal.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        toolbar.setBackgroundColor(getThemeColor(context, R.attr.colorPrimary));
-                        drawerLayout.setStatusBarBackgroundColor(
-                                getThemeColor(context, R.attr.colorPrimaryDark));
-                    }
-                });
-                createCircularReveal.start();
+            if (isHigherLolipop()) {
+                setupToolbarAnimate(containsOverflow, numberOfMenuIcon, DURATION, drawerLayout);
             } else {
-                AlphaAnimation alphaAnimation = new AlphaAnimation(MAX_ALPHA, MIN_ALPHA);
-                Animation translateAnimation =
-                        new TranslateAnimation(MIN_ALPHA, MIN_ALPHA, MIN_ALPHA,
-                                (float) (-toolbar.getHeight()));
-                AnimationSet animationSet = new AnimationSet(true);
-                animationSet.addAnimation(alphaAnimation);
-                animationSet.addAnimation(translateAnimation);
-                animationSet.setDuration(DURATION);
-                animationSet.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        toolbar.setBackgroundColor(getThemeColor(context, R.attr.colorPrimary));
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-
-                    }
-                });
-                toolbar.startAnimation(animationSet);
+                setupAnimation();
             }
             drawerLayout.setStatusBarBackgroundColor(
                     getThemeColor(context, R.attr.colorPrimaryDark));
         }
+    }
+
+    private static void setupToolbarAnimate(boolean containsOverflow, int numberOfMenuIcon,
+            float startRadius, final DrawerLayout drawerLayout) {
+        boolean checkAnimate = startRadius == MIN_ALPHA;
+        Animator createCircularReveal = null;
+        int width = mToolbar.getWidth() - (containsOverflow ? mContext.getResources()
+                .getDimensionPixelSize(R.dimen.abc_action_button_min_width_overflow_material)
+                : ZERO) - ((mContext.getResources()
+                .getDimensionPixelSize(R.dimen.abc_action_button_min_width_material)
+                * numberOfMenuIcon) / TWO);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                createCircularReveal = ViewAnimationUtils.createCircularReveal(mToolbar,
+                        isRtl(mContext.getResources()) ? mToolbar.getWidth() - width : width,
+                        mToolbar.getHeight() / TWO, checkAnimate ? MIN_ALPHA : (float) width,
+                        checkAnimate ? (float) width : MIN_ALPHA);
+
+                if (!checkAnimate) {
+                    createCircularReveal.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            mToolbar.setBackgroundColor(
+                                    getThemeColor(mContext, R.attr.colorPrimary));
+                            drawerLayout.setStatusBarBackgroundColor(
+                                    getThemeColor(mContext, R.attr.colorPrimaryDark));
+                        }
+                    });
+                }
+            }
+        }
+        createCircularReveal.setDuration(DURATION);
+        createCircularReveal.start();
+    }
+
+    private static void setupTransition() {
+        TranslateAnimation translateAnimation =
+                new TranslateAnimation(MIN_ALPHA, MIN_ALPHA, (float) (-mToolbar.getHeight()),
+                        MIN_ALPHA);
+        translateAnimation.setDuration(DURATION);
+        mToolbar.clearAnimation();
+        mToolbar.startAnimation(translateAnimation);
+    }
+
+    private static void setupAnimation() {
+        AlphaAnimation alphaAnimation = new AlphaAnimation(MAX_ALPHA, MIN_ALPHA);
+        Animation translateAnimation = new TranslateAnimation(MIN_ALPHA, MIN_ALPHA, MIN_ALPHA,
+                (float) (-mToolbar.getHeight()));
+        AnimationSet animationSet = new AnimationSet(true);
+        animationSet.addAnimation(alphaAnimation);
+        animationSet.addAnimation(translateAnimation);
+        animationSet.setDuration(DURATION);
+        animationSet.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mToolbar.setBackgroundColor(getThemeColor(mContext, R.attr.colorPrimary));
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        mToolbar.startAnimation(animationSet);
+    }
+
+    private static boolean isHigherLolipop() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)

@@ -4,7 +4,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
@@ -26,14 +26,22 @@ public class MainActivity extends AppCompatActivity
         MenuItemCompat.OnActionExpandListener, SearchView.OnQueryTextListener {
 
     private static final int NUM_OF_MENU_ICON = 1;
-    private static final long TIME_DELAY_SEARCH = 200;
+    private static final long WAITING_TIME = 500;
     private Toolbar mToolbar;
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
     private MainContract.Presenter mPresenter;
     private MenuItem mSearchItem;
-    private SearchView mSearchView;
-    private Handler mHandler;
+    private CountDownTimer mCountDownTimer = new CountDownTimer(WAITING_TIME, WAITING_TIME) {
+
+        public void onTick(long millisUntilFinished) {
+            // no ops
+        }
+
+        public void onFinish() {
+            //TO DO
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +57,6 @@ public class MainActivity extends AppCompatActivity
     private void initComponents() {
         mPresenter = new MainPresenter();
         mPresenter.setView(this);
-        mHandler = new Handler();
         //Init Toolbar
         setSupportActionBar(mToolbar);
         //Init Navigartion Drawable
@@ -83,13 +90,13 @@ public class MainActivity extends AppCompatActivity
 
     private void initSearchView() {
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        mSearchView = (SearchView) MenuItemCompat.getActionView(mSearchItem);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(mSearchItem);
         SearchView.SearchAutoComplete searchAutoComplete =
-                mSearchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
-        searchAutoComplete.setHintTextColor(getResources().getColor(R.color.hint_text_color));
-        searchAutoComplete.setTextColor(getResources().getColor(R.color.text_search_color));
-        mSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        mSearchView.setOnQueryTextListener(this);
+                searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+        searchAutoComplete.setHintTextColor(getResources().getColor(R.color.color_gray_400));
+        searchAutoComplete.setTextColor(getResources().getColor(R.color.color_gray_900));
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setOnQueryTextListener(this);
     }
 
     @Override
@@ -141,21 +148,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onQueryTextChange(String s) {
-        mHandler.postDelayed(runable, TIME_DELAY_SEARCH);
+    public boolean onQueryTextChange(String query) {
+        if (mCountDownTimer != null) {
+            mCountDownTimer.cancel();
+        }
+        if (!query.isEmpty()) {
+            assert mCountDownTimer != null;
+            mCountDownTimer.start();
+        }
         return false;
     }
-
-    Runnable runable = new Runnable() {
-        @Override
-        public void run() {
-            mHandler.removeCallbacks(runable);
-            String query = mSearchView.getQuery().toString();
-            if (!query.isEmpty()) {
-                //TO DO
-            }
-        }
-    };
 
     @Override
     protected void onStop() {
@@ -165,7 +167,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onDestroy() {
-        mHandler.removeCallbacks(runable);
         super.onDestroy();
     }
 }
