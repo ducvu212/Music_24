@@ -11,6 +11,7 @@ public class DisplayUtils {
 
     public static void addFragment(FragmentManager manager, Fragment fragment, int id, String tag) {
         FragmentTransaction transaction = manager.beginTransaction();
+        
         transaction.add(id, fragment, tag);
         transaction.commit();
     }
