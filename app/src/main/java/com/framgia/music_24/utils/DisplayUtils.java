@@ -11,8 +11,12 @@ public class DisplayUtils {
 
     public static void addFragment(FragmentManager manager, Fragment fragment, int id, String tag) {
         FragmentTransaction transaction = manager.beginTransaction();
-        
-        transaction.add(id, fragment, tag);
-        transaction.commit();
+        Fragment fragmentByTag = manager.findFragmentByTag(tag);
+        if (fragmentByTag != null) {
+            manager.beginTransaction().show(fragmentByTag).commit();
+        } else {
+            transaction.add(id, fragment, tag);
+            transaction.commit();
+        }
     }
 }

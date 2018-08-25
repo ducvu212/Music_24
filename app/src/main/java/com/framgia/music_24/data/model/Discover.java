@@ -10,24 +10,38 @@ public class Discover {
     private String mGender;
     private List<Music> mMusics;
 
-    public Discover(String gender, List<Music> musics) {
-        mGender = gender;
-        mMusics = musics;
+    private Discover(DiscoverBuilder discoverBuilder) {
+        mGender = discoverBuilder.mGender;
+        mMusics = discoverBuilder.mMusics;
     }
 
     public String getGender() {
         return mGender;
     }
 
-    public void setGender(String gender) {
-        mGender = gender;
-    }
-
     public List<Music> getMusics() {
         return mMusics;
     }
 
-    public void setMusics(List<Music> musics) {
-        mMusics = musics;
+    public static final class DiscoverBuilder {
+        private String mGender;
+        private List<Music> mMusics;
+
+        public DiscoverBuilder() {
+        }
+
+        public DiscoverBuilder Gender(String gender) {
+            mGender = gender;
+            return this;
+        }
+
+        public DiscoverBuilder Musics(List<Music> musics) {
+            mMusics = musics;
+            return this;
+        }
+
+        public Discover build() {
+            return new Discover(this);
+        }
     }
 }
