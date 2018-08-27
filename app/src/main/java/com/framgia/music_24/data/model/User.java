@@ -1,24 +1,47 @@
 package com.framgia.music_24.data.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import static com.framgia.music_24.data.model.User.UserConstants.USER_AVATAR_URL;
+import static com.framgia.music_24.data.model.User.UserConstants.USER_CITY;
+import static com.framgia.music_24.data.model.User.UserConstants.USER_FIRST_NAME;
+import static com.framgia.music_24.data.model.User.UserConstants.USER_FULL_NAME;
+import static com.framgia.music_24.data.model.User.UserConstants.USER_ID;
+import static com.framgia.music_24.data.model.User.UserConstants.USER_KIND;
+import static com.framgia.music_24.data.model.User.UserConstants.USER_LAST_MODIFIED;
+import static com.framgia.music_24.data.model.User.UserConstants.USER_LAST_NAME;
+import static com.framgia.music_24.data.model.User.UserConstants.USER_NAME;
+import static com.framgia.music_24.data.model.User.UserConstants.USER_PERMALINK_URL;
+
 /**
  * Created by CuD HniM on 18/08/24.
  */
-public class User {
+public class User implements Parcelable {
 
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel source) {
+            return new User(source);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
     private String mAvatarUrl;
     private String mFirstName;
     private String mFullName;
-    private int mId;
     private String mKind;
     private String mLastModified;
     private String mLastName;
-    private String mPermalink;
     private String mPermalinkUrl;
-    private String mUri;
-    private String mUrn;
     private String mUsername;
     private String mCity;
-    private String mCountryCode;
+    private int mId;
 
     private User(UserBuilder userBuilder) {
         mAvatarUrl = userBuilder.mAvatarUrl;
@@ -28,13 +51,35 @@ public class User {
         mKind = userBuilder.mKind;
         mLastModified = userBuilder.mLastModified;
         mLastName = userBuilder.mLastName;
-        mPermalink = userBuilder.mPermalink;
         mPermalinkUrl = userBuilder.mPermalinkUrl;
-        mUri = userBuilder.mUri;
-        mUrn = userBuilder.mUrn;
         mUsername = userBuilder.mUsername;
         mCity = userBuilder.mCity;
-        mCountryCode = userBuilder.mCountryCode;
+    }
+
+    public User(JSONObject jsonObject) throws JSONException {
+        mAvatarUrl = jsonObject.getString(USER_AVATAR_URL);
+        mFirstName = jsonObject.getString(USER_FIRST_NAME);
+        mFullName = jsonObject.getString(USER_FULL_NAME);
+        mKind = jsonObject.getString(USER_KIND);
+        mLastModified = jsonObject.getString(USER_LAST_MODIFIED);
+        mLastName = jsonObject.getString(USER_LAST_NAME);
+        mPermalinkUrl = jsonObject.getString(USER_PERMALINK_URL);
+        mUsername = jsonObject.getString(USER_NAME);
+        mCity = jsonObject.getString(USER_CITY);
+        mId = jsonObject.getInt(USER_ID);
+    }
+
+    protected User(Parcel in) {
+        mAvatarUrl = in.readString();
+        mFirstName = in.readString();
+        mFullName = in.readString();
+        mId = in.readInt();
+        mKind = in.readString();
+        mLastModified = in.readString();
+        mLastName = in.readString();
+        mPermalinkUrl = in.readString();
+        mUsername = in.readString();
+        mCity = in.readString();
     }
 
     public String getAvatarUrl() {
@@ -65,20 +110,8 @@ public class User {
         return mLastName;
     }
 
-    public String getPermalink() {
-        return mPermalink;
-    }
-
     public String getPermalinkUrl() {
         return mPermalinkUrl;
-    }
-
-    public String getUri() {
-        return mUri;
-    }
-
-    public String getUrn() {
-        return mUrn;
     }
 
     public String getUsername() {
@@ -89,25 +122,36 @@ public class User {
         return mCity;
     }
 
-    public String getCountryCode() {
-        return mCountryCode;
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mAvatarUrl);
+        dest.writeString(mFirstName);
+        dest.writeString(mFullName);
+        dest.writeInt(mId);
+        dest.writeString(mKind);
+        dest.writeString(mLastModified);
+        dest.writeString(mLastName);
+        dest.writeString(mPermalinkUrl);
+        dest.writeString(mUsername);
+        dest.writeString(mCity);
     }
 
     public static final class UserBuilder {
         private String mAvatarUrl;
         private String mFirstName;
         private String mFullName;
-        private int mId;
         private String mKind;
         private String mLastModified;
         private String mLastName;
-        private String mPermalink;
         private String mPermalinkUrl;
-        private String mUri;
-        private String mUrn;
         private String mUsername;
         private String mCity;
-        private String mCountryCode;
+        private int mId;
 
         public UserBuilder() {
         }
@@ -147,23 +191,8 @@ public class User {
             return this;
         }
 
-        public UserBuilder Permalink(String permalink) {
-            mPermalink = permalink;
-            return this;
-        }
-
         public UserBuilder PermalinkUrl(String permalinkUrl) {
             mPermalinkUrl = permalinkUrl;
-            return this;
-        }
-
-        public UserBuilder Uri(String uri) {
-            mUri = uri;
-            return this;
-        }
-
-        public UserBuilder Urn(String urn) {
-            mUrn = urn;
             return this;
         }
 
@@ -177,13 +206,22 @@ public class User {
             return this;
         }
 
-        public UserBuilder CountryCode(String countryCode) {
-            mCountryCode = countryCode;
-            return this;
-        }
-
         public User build() {
             return new User(this);
         }
+    }
+
+    static class UserConstants {
+        //User
+        static final String USER_AVATAR_URL = "avatar_url";
+        static final String USER_FIRST_NAME = "first_name";
+        static final String USER_FULL_NAME = "full_name";
+        static final String USER_ID = "id";
+        static final String USER_KIND = "kind";
+        static final String USER_LAST_MODIFIED = "last_modified";
+        static final String USER_LAST_NAME = "last_name";
+        static final String USER_PERMALINK_URL = "permalink_url";
+        static final String USER_NAME = "username";
+        static final String USER_CITY = "city";
     }
 }
