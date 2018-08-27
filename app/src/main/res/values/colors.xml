@@ -12,4 +12,7 @@
     <color name="color_black_alpha_31">#1F000000</color>
     <color name="color_black_alpha_138">#8A000000</color>
     <color name="color_gray_600">#757575</color>
+    <color name="color_deep_orange_accent_200">#FF7635</color>
+    <color name="color_black_alpha_50">#50000000</color>
+    <color name="color_black_alpha_0">#00000000</color>
 </resources>

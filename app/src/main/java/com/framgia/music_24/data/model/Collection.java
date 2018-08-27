@@ -8,7 +8,7 @@ public class Collection {
     private Track mTrack;
     private Double mScore;
 
-    private Collection(CollectionBuilder collectionBuilder) {
+    public Collection(CollectionBuilder collectionBuilder) {
         mTrack = collectionBuilder.mTrack;
         mScore = collectionBuilder.mScore;
     }

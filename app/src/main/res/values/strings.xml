@@ -16,5 +16,14 @@
     <string name="bias_suggestion_view">0.13</string>
     <string name="bias_avatar_navigation">0.5</string>
     <string name="bias_text_view_name_navigation">0.45</string>
-    <string name="discover_all_music"><![CDATA[All Music >]]></string>
+    <string name="tool_bar_home">Home</string>
+    <string name="splash_bias_progress_bar">0.7</string>
+    <string name="max_length_text_details">20</string>
+    <string name="length_player">32</string>
+    <string name="discover_all_music">All Music </string>
+    <string name="discover_all_audio">All Audio </string>
+    <string name="discover_alternative_rock">Alternative Rock </string>
+    <string name="discover_ambient">Ambient</string>
+    <string name="discover_classical">Classical </string>
+    <string name="discover_country">Country </string>
 </resources>
