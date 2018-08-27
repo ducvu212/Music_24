@@ -1,5 +1,7 @@
 package com.framgia.music_24.utils;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Created by CuD HniM on 18/08/24.
  */
@@ -16,5 +18,12 @@ public final class StringUtils {
 
     public static boolean isNotBlank(String input) {
         return !isBlank(input);
+    }
+
+    public static String convertMilisecToMinute(long milisec) {
+        return String.format("%d:%d ", TimeUnit.MILLISECONDS.toMinutes(milisec),
+                TimeUnit.MILLISECONDS.toSeconds(milisec) - TimeUnit.MINUTES.toSeconds(
+                        TimeUnit.MILLISECONDS.
+                                toMinutes(milisec)));
     }
 }

@@ -33,4 +33,6 @@ public final class Constants {
     public static final String STREAM = "/stream";
     public static final String STREAM_CLIENT_ID = "?client_id=";
 
+    public static final String ARROW = " >>";
+    public static final String ARGUMENT_GENRE = "GenreData";
 }

@@ -1,9 +1,11 @@
 package com.framgia.music_24.screens.discover;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,27 +13,45 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.framgia.music_24.R;
 import com.framgia.music_24.data.model.Discover;
+import com.framgia.music_24.data.model.Track;
 import com.framgia.music_24.screens.discover.adapter.DiscoverAdapter;
+import com.framgia.music_24.screens.discover.adapter.TrackAdapter;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.framgia.music_24.utils.Constants.ARGUMENT_GENRE;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class DiscoverFragment extends Fragment
-        implements DiscoverContract.View, DiscoverAdapter.DiscoverHolder.onItemClickListener {
+        implements DiscoverContract.View, DiscoverAdapter.OnClickListener,
+        TrackAdapter.OnItemClickListener {
 
     public static final String TAG = "DiscoverFragment";
+    private static final String ARGUMENT_POSITION_ITEM = "ARGUMENT_POSITION_ITEM";
+    private static final String ARGUMENT_TITLE_ITEM = "ARGUMENT_TITLE_ITEM";
     private DiscoverContract.Presenter mPresenter;
     private RecyclerView mRecyclerAllGenders;
     private List<Discover> mDiscovers;
+    private FragmentActivity mContext;
 
     public DiscoverFragment() {
-        // Required empty public constructor
+
     }
 
-    public static DiscoverFragment newInstance() {
-        return new DiscoverFragment();
+    public static DiscoverFragment newInstance(ArrayList<Discover> discovers) {
+        DiscoverFragment fragment = new DiscoverFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(ARGUMENT_GENRE, discovers);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        mContext = (FragmentActivity) activity;
+        super.onAttach(activity);
     }
 
     @Override
@@ -53,11 +73,14 @@ public class DiscoverFragment extends Fragment
 
     private void initComponents() {
         mDiscovers = new ArrayList<>();
+        if (getArguments() != null) {
+            mDiscovers = getArguments().getParcelableArrayList(ARGUMENT_GENRE);
+        }
         setupRecycleView();
     }
 
     private void setupRecycleView() {
-        DiscoverAdapter adapter = new DiscoverAdapter(getContext(), mDiscovers, this);
+        DiscoverAdapter adapter = new DiscoverAdapter(getContext(), mDiscovers, this, this);
         mRecyclerAllGenders.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerAllGenders.setAdapter(adapter);
     }
@@ -77,12 +100,17 @@ public class DiscoverFragment extends Fragment
 
     @Override
     public void onStop() {
-        super.onStop();
         mPresenter.onStop();
+        super.onStop();
     }
 
     @Override
-    public void onClick(int position) {
+    public void OnGenreClick(int position, String genre) {
+
+    }
+
+    @Override
+    public void OnTrackClick(List<Track> tracks, int position) {
 
     }
 }
