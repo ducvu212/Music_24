@@ -10,8 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import com.framgia.music_24.R;
 import com.framgia.music_24.data.model.Discover;
-import com.framgia.music_24.data.model.Music;
-import java.util.ArrayList;
+import com.framgia.music_24.data.model.Track;
 import java.util.List;
 
 /**
@@ -19,16 +18,19 @@ import java.util.List;
  */
 public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.DiscoverHolder> {
 
-    private DiscoverHolder.onItemClickListener mListener;
-    private List<Discover> mList;
     private Context mContext;
+    private List<Discover> mDiscovers;
     private LayoutInflater mInflater;
+    private OnClickListener mListener;
+    private TrackAdapter.OnItemClickListener mTrackClickListener;
 
     public DiscoverAdapter(Context context, List<Discover> discovers,
-            DiscoverHolder.onItemClickListener onItemClickListener) {
+            OnClickListener OnClickListener,
+            TrackAdapter.OnItemClickListener OnItemClickListener) {
         mContext = context;
-        mList = discovers;
-        mListener = onItemClickListener;
+        mDiscovers = discovers;
+        mListener = OnClickListener;
+        mTrackClickListener = OnItemClickListener;
     }
 
     @NonNull
@@ -43,20 +45,20 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.Discov
 
     @Override
     public void onBindViewHolder(@NonNull DiscoverHolder discoverHolder, int i) {
-        discoverHolder.bindData(mContext, mList.get(i), mListener);
+        discoverHolder.bindData(mContext, mDiscovers.get(i), mListener);
     }
 
     @Override
     public int getItemCount() {
-        return mList == null ? 0 : mList.size();
+        return mDiscovers == null ? 0 : mDiscovers.size();
     }
 
-    public static class DiscoverHolder extends RecyclerView.ViewHolder
-            implements View.OnClickListener {
+    public class DiscoverHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private TextView mTextViewGender;
         private RecyclerView mRecyclerGender;
-        private onItemClickListener mListener;
+        private OnClickListener mListener;
+        private String mGenre;
 
         DiscoverHolder(@NonNull View itemView) {
             super(itemView);
@@ -65,16 +67,17 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.Discov
         }
 
         public void bindData(Context context, Discover discover,
-                onItemClickListener onItemClickListener) {
+                OnClickListener OnClickListener) {
             mTextViewGender.setText(discover.getGender());
+            mGenre = discover.getGender();
             mTextViewGender.setOnClickListener(this);
             initRecycleGenders(context, discover);
-            mListener = onItemClickListener;
+            mListener = OnClickListener;
         }
 
         private void initRecycleGenders(Context context, Discover discover) {
-            ArrayList<Music> music = (ArrayList<Music>) discover.getMusics();
-            MusicAdapter adapter = new MusicAdapter(context, music);
+            List<Track> tracks = discover.getTracks();
+            TrackAdapter adapter = new TrackAdapter(context, tracks, mTrackClickListener);
             mRecyclerGender.setHasFixedSize(true);
             mRecyclerGender.setLayoutManager(
                     new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
@@ -85,13 +88,15 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.Discov
         public void onClick(View view) {
             switch (view.getId()) {
                 case R.id.textview_gender:
-                    if (mListener != null) mListener.onClick(getAdapterPosition());
+                    if (mListener != null) {
+                        mListener.OnGenreClick(getAdapterPosition(), mGenre);
+                    }
                     break;
             }
         }
+    }
 
-        public interface onItemClickListener {
-            void onClick(int position);
-        }
+    public interface OnClickListener {
+        void OnGenreClick(int position, String title);
     }
 }

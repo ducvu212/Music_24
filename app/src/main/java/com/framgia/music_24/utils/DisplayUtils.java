@@ -1,7 +1,6 @@
 package com.framgia.music_24.utils;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -17,8 +16,7 @@ public class DisplayUtils {
         Toast.makeText(context, content, Toast.LENGTH_SHORT).show();
     }
 
-    public static void addFragment(FragmentManager manager, Fragment fragment, int id, String tag,
-            Bundle bundle) {
+    public static void addFragment(FragmentManager manager, Fragment fragment, int id, String tag) {
         FragmentTransaction transaction = manager.beginTransaction();
         Fragment fragmentByTag = manager.findFragmentByTag(tag);
         if (fragmentByTag != null) {
@@ -28,9 +26,6 @@ public class DisplayUtils {
                     .commit();
         } else {
             transaction.add(id, fragment, tag);
-            if (bundle != null) {
-                fragment.setArguments(bundle);
-            }
             if (id != R.id.frame_main_layout) {
                 transaction.addToBackStack(tag);
             }

@@ -5,17 +5,17 @@ import android.os.Parcelable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.framgia.music_24.data.model.Track.TrackConstants.TRACK_ARTWORK_URL;
-import static com.framgia.music_24.data.model.Track.TrackConstants.TRACK_CREATED_AT;
-import static com.framgia.music_24.data.model.Track.TrackConstants.TRACK_DESCRIPTION;
-import static com.framgia.music_24.data.model.Track.TrackConstants.TRACK_DISPLAY_DATE;
-import static com.framgia.music_24.data.model.Track.TrackConstants.TRACK_DOWNLOADABLE;
-import static com.framgia.music_24.data.model.Track.TrackConstants.TRACK_DURATION;
-import static com.framgia.music_24.data.model.Track.TrackConstants.TRACK_FULL_DURATION;
-import static com.framgia.music_24.data.model.Track.TrackConstants.TRACK_ID;
-import static com.framgia.music_24.data.model.Track.TrackConstants.TRACK_LAST_MODIFIED;
-import static com.framgia.music_24.data.model.Track.TrackConstants.TRACK_TITLE;
-import static com.framgia.music_24.data.model.Track.TrackConstants.TRACK_USER;
+import static com.framgia.music_24.data.model.Track.JsonParamKey.TRACK_ARTWORK_URL;
+import static com.framgia.music_24.data.model.Track.JsonParamKey.TRACK_CREATED_AT;
+import static com.framgia.music_24.data.model.Track.JsonParamKey.TRACK_DESCRIPTION;
+import static com.framgia.music_24.data.model.Track.JsonParamKey.TRACK_DISPLAY_DATE;
+import static com.framgia.music_24.data.model.Track.JsonParamKey.TRACK_DOWNLOADABLE;
+import static com.framgia.music_24.data.model.Track.JsonParamKey.TRACK_DURATION;
+import static com.framgia.music_24.data.model.Track.JsonParamKey.TRACK_FULL_DURATION;
+import static com.framgia.music_24.data.model.Track.JsonParamKey.TRACK_ID;
+import static com.framgia.music_24.data.model.Track.JsonParamKey.TRACK_LAST_MODIFIED;
+import static com.framgia.music_24.data.model.Track.JsonParamKey.TRACK_TITLE;
+import static com.framgia.music_24.data.model.Track.JsonParamKey.TRACK_USER;
 
 /**
  * Created by CuD HniM on 18/08/24.
@@ -228,7 +228,7 @@ public class Track implements Parcelable {
         }
     }
 
-    static class TrackConstants {
+    static class JsonParamKey {
         //Track
         static final String TRACK_ARTWORK_URL = "artwork_url";
         static final String TRACK_CREATED_AT = "created_at";

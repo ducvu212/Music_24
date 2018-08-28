@@ -5,16 +5,16 @@ import android.os.Parcelable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.framgia.music_24.data.model.User.UserConstants.USER_AVATAR_URL;
-import static com.framgia.music_24.data.model.User.UserConstants.USER_CITY;
-import static com.framgia.music_24.data.model.User.UserConstants.USER_FIRST_NAME;
-import static com.framgia.music_24.data.model.User.UserConstants.USER_FULL_NAME;
-import static com.framgia.music_24.data.model.User.UserConstants.USER_ID;
-import static com.framgia.music_24.data.model.User.UserConstants.USER_KIND;
-import static com.framgia.music_24.data.model.User.UserConstants.USER_LAST_MODIFIED;
-import static com.framgia.music_24.data.model.User.UserConstants.USER_LAST_NAME;
-import static com.framgia.music_24.data.model.User.UserConstants.USER_NAME;
-import static com.framgia.music_24.data.model.User.UserConstants.USER_PERMALINK_URL;
+import static com.framgia.music_24.data.model.User.JsonParamKey.USER_AVATAR_URL;
+import static com.framgia.music_24.data.model.User.JsonParamKey.USER_CITY;
+import static com.framgia.music_24.data.model.User.JsonParamKey.USER_FIRST_NAME;
+import static com.framgia.music_24.data.model.User.JsonParamKey.USER_FULL_NAME;
+import static com.framgia.music_24.data.model.User.JsonParamKey.USER_ID;
+import static com.framgia.music_24.data.model.User.JsonParamKey.USER_KIND;
+import static com.framgia.music_24.data.model.User.JsonParamKey.USER_LAST_MODIFIED;
+import static com.framgia.music_24.data.model.User.JsonParamKey.USER_LAST_NAME;
+import static com.framgia.music_24.data.model.User.JsonParamKey.USER_NAME;
+import static com.framgia.music_24.data.model.User.JsonParamKey.USER_PERMALINK_URL;
 
 /**
  * Created by CuD HniM on 18/08/24.
@@ -211,7 +211,7 @@ public class User implements Parcelable {
         }
     }
 
-    static class UserConstants {
+    static class JsonParamKey {
         //User
         static final String USER_AVATAR_URL = "avatar_url";
         static final String USER_FIRST_NAME = "first_name";

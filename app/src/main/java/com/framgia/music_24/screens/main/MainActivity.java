@@ -2,9 +2,11 @@ package com.framgia.music_24.screens.main;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
@@ -18,9 +20,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import com.framgia.music_24.R;
+import com.framgia.music_24.data.model.Discover;
 import com.framgia.music_24.screens.discover.DiscoverFragment;
 import com.framgia.music_24.utils.DisplayUtils;
+import java.util.ArrayList;
+import java.util.List;
 
+import static com.framgia.music_24.screens.splash.SplashActivity.EXTRA_GENRE;
 import static com.framgia.music_24.utils.SearchViewAnimate.animateSearchToolbar;
 
 public class MainActivity extends AppCompatActivity
@@ -34,6 +40,7 @@ public class MainActivity extends AppCompatActivity
     private NavigationView mNavigationView;
     private MainContract.Presenter mPresenter;
     private MenuItem mSearchItem;
+
     private CountDownTimer mCountDownTimer = new CountDownTimer(WAITING_TIME, WAITING_TIME) {
 
         public void onTick(long millisUntilFinished) {
@@ -59,17 +66,24 @@ public class MainActivity extends AppCompatActivity
     private void initComponents() {
         mPresenter = new MainPresenter();
         mPresenter.setView(this);
-        //Init Toolbar
+        setupNavigation();
+        sendDataToFragment();
+    }
+
+    private void setupNavigation() {
         setSupportActionBar(mToolbar);
-        //Init Navigartion Drawable
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
         mNavigationView.setNavigationItemSelectedListener(this);
-        //Add Discover Fragment
-        DisplayUtils.addFragment(getSupportFragmentManager(), DiscoverFragment.newInstance(),
-                R.id.frame_main_layout, DiscoverFragment.TAG);
+    }
+
+    private void sendDataToFragment() {
+        ArrayList<Discover> discovers = getIntent().getParcelableArrayListExtra(EXTRA_GENRE);
+        DisplayUtils.addFragment(getSupportFragmentManager(),
+                DiscoverFragment.newInstance(discovers), R.id.frame_main_layout,
+                DiscoverFragment.TAG);
     }
 
     private void initViews() {
@@ -82,6 +96,13 @@ public class MainActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
         mPresenter.onStart();
+    }
+
+    public static Intent getProfileIntent(Context context, List<Discover> discovers) {
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.putParcelableArrayListExtra(EXTRA_GENRE,
+                (ArrayList<? extends Parcelable>) discovers);
+        return intent;
     }
 
     @Override
@@ -143,12 +164,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
-
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String s) {
+    public boolean onQueryTextSubmit(String query) {
         return false;
     }
 
