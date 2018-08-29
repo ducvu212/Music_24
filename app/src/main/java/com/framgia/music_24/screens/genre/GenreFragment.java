@@ -16,6 +16,8 @@ import com.framgia.music_24.data.model.Track;
 import com.framgia.music_24.data.repository.TracksRepository;
 import com.framgia.music_24.data.source.remote.TracksRemoteDataSource;
 import com.framgia.music_24.screens.EndlessScrollListener;
+import com.framgia.music_24.screens.play.PlayScreenFragment;
+import com.framgia.music_24.utils.DisplayUtils;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +45,6 @@ public class GenreFragment extends Fragment
     private GenreAdapter mAdapter;
     private int mLimit = 10;
     private int mPosition;
-    private boolean mIsLoading;
 
     public static GenreFragment newInstance(int position, String genre) {
         Bundle args = new Bundle();
@@ -132,9 +133,6 @@ public class GenreFragment extends Fragment
                 new EndlessScrollListener((LinearLayoutManager) mRecyclerGenre.getLayoutManager()) {
                     @Override
                     public void OnLoadMore() {
-                        if (mIsLoading) {
-                            return;
-                        }
                         loadMore();
                     }
                 });
@@ -166,7 +164,8 @@ public class GenreFragment extends Fragment
 
     @Override
     public void OnItemClick(List<Track> tracks, int position) {
-        //TO DO
+        DisplayUtils.addFragment(mContext.getSupportFragmentManager(),
+                PlayScreenFragment.newInstance(tracks, position), R.id.coordinator_add_play, PlayScreenFragment.TAG);
     }
 
     private void loadMore() {
