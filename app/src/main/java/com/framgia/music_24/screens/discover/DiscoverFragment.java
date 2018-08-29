@@ -16,6 +16,8 @@ import com.framgia.music_24.data.model.Discover;
 import com.framgia.music_24.data.model.Track;
 import com.framgia.music_24.screens.discover.adapter.DiscoverAdapter;
 import com.framgia.music_24.screens.discover.adapter.TrackAdapter;
+import com.framgia.music_24.screens.genre.GenreFragment;
+import com.framgia.music_24.utils.DisplayUtils;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,8 +31,8 @@ public class DiscoverFragment extends Fragment
         TrackAdapter.OnItemClickListener {
 
     public static final String TAG = "DiscoverFragment";
-    private static final String ARGUMENT_POSITION_ITEM = "ARGUMENT_POSITION_ITEM";
-    private static final String ARGUMENT_TITLE_ITEM = "ARGUMENT_TITLE_ITEM";
+    public static final String ARGUMENT_POSITION_ITEM = "ARGUMENT_POSITION_ITEM";
+    public static final String ARGUMENT_TITLE_ITEM = "ARGUMENT_TITLE_ITEM";
     private DiscoverContract.Presenter mPresenter;
     private RecyclerView mRecyclerAllGenders;
     private List<Discover> mDiscovers;
@@ -106,7 +108,8 @@ public class DiscoverFragment extends Fragment
 
     @Override
     public void OnGenreClick(int position, String genre) {
-
+        DisplayUtils.addFragment(mContext.getSupportFragmentManager(),
+                GenreFragment.newInstance(position, genre), R.id.frame_discover, GenreFragment.TAG);
     }
 
     @Override
