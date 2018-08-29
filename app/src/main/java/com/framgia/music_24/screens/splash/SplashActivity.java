@@ -30,7 +30,7 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.color_gray_200));
+            getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.color_deep_orange_accent_400));
         }
         setContentView(R.layout.activity_splash);
         initComponents();

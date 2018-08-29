@@ -15,4 +15,5 @@
     <color name="color_deep_orange_accent_200">#FF7635</color>
     <color name="color_black_alpha_50">#50000000</color>
     <color name="color_black_alpha_0">#00000000</color>
+    <color name="color_deep_orange_accent_400">#FF3900</color>
 </resources>

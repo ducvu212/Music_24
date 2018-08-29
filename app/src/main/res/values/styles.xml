@@ -33,7 +33,7 @@
     </style>
 
     <style name="CircularProgress" parent="Theme.AppCompat.Light">
-        <item name="colorAccent">@color/color_deep_orange_accent_200</item>
+        <item name="colorAccent">@android:color/white</item>
     </style>
 
 </resources>
