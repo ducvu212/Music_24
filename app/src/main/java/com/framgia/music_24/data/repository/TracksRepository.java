@@ -1,7 +1,5 @@
 package com.framgia.music_24.data.repository;
 
-import com.framgia.music_24.data.model.Discover;
-import com.framgia.music_24.data.model.Track;
 import com.framgia.music_24.data.source.CallBack;
 import com.framgia.music_24.data.source.TracksDataSource;
 import com.framgia.music_24.data.source.remote.TracksRemoteDataSource;
@@ -34,12 +32,12 @@ public class TracksRepository implements TracksDataSource {
     }
 
     @Override
-    public void getTrack(String genre, String genreTitle, List datas, CallBack callBack) {
-        mRemoteDataSource.getTrack(genre, genreTitle, datas, callBack);
+    public void getTrack(String genre, String genreTitle, CallBack callBack) {
+        mRemoteDataSource.getTrack(genre, genreTitle, callBack);
     }
 
     @Override
-    public void getTrack(String genre, int limit, List datas, CallBack callBack) {
-        mRemoteDataSource.getTrack(genre, limit, datas, callBack);
+    public void getTrack(String genre, int limit, CallBack callBack) {
+        mRemoteDataSource.getTrack(genre, limit, callBack);
     }
 }

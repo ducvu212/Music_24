@@ -24,6 +24,6 @@ public interface SplashContract {
      */
 
     interface Presenter extends BasePresenter<View> {
-        void loadDataGenre(String genre, String genreTitle, List datas);
+        void loadDataGenre(String genre, String genreTitle, List<Discover> discovers);
     }
 }

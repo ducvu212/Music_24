@@ -8,7 +8,7 @@
     android:background="@android:color/white"
     android:fitsSystemWindows="true"
     android:theme="@style/PlayTheme"
-    tools:context=".screens.play.PlayScreenFragment">
+    tools:context=".screens.play.PlayMusicFragment">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"

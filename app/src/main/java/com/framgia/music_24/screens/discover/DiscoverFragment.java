@@ -17,7 +17,7 @@ import com.framgia.music_24.data.model.Track;
 import com.framgia.music_24.screens.discover.adapter.DiscoverAdapter;
 import com.framgia.music_24.screens.discover.adapter.TrackAdapter;
 import com.framgia.music_24.screens.genre.GenreFragment;
-import com.framgia.music_24.screens.play.PlayScreenFragment;
+import com.framgia.music_24.screens.play.PlayMusicFragment;
 import com.framgia.music_24.utils.DisplayUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -116,6 +116,6 @@ public class DiscoverFragment extends Fragment
     @Override
     public void OnTrackClick(List<Track> tracks, int position) {
         DisplayUtils.addFragment(mContext.getSupportFragmentManager(),
-                PlayScreenFragment.newInstance(tracks, position), R.id.coordinator_add_play, PlayScreenFragment.TAG);
+                PlayMusicFragment.newInstance(tracks, position), R.id.coordinator_add_play, PlayMusicFragment.TAG);
     }
 }

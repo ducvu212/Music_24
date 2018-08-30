@@ -1,4 +1,4 @@
-package com.framgia.music_24.data.source.remote;
+package com.framgia.music_24.data.source.remote.asynctask;
 
 import android.os.AsyncTask;
 import com.framgia.music_24.data.model.Discover;
@@ -22,10 +22,10 @@ public class TracksAsyncTask extends AsyncTask<String, Void, List<Track>> {
     private String mGenreTitle;
     private List<Object> mDataList;
 
-    TracksAsyncTask(String genreTitle, List<Object> datas, CallBack callBack) {
-        mDataList = datas;
-        mCallBack = callBack;
+    public TracksAsyncTask(String genreTitle, CallBack callBack) {
         mGenreTitle = genreTitle;
+        mDataList = new ArrayList<>();
+        mCallBack = callBack;
     }
 
     @Override

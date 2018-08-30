@@ -36,10 +36,12 @@ public class SplashPresenter implements SplashContract.Presenter {
     }
 
     @Override
-    public void loadDataGenre(final String genre, final String genderTitle, List datas) {
-        mTracksRepository.getTrack(genre, genderTitle, datas, new CallBack<List<Discover>>() {
+    public void loadDataGenre(final String genre, final String genderTitle,
+            final List<Discover> datas) {
+        mTracksRepository.getTrack(genre, genderTitle, new CallBack<List<Discover>>() {
             @Override
-            public void onSuccess(List<Discover> datas) {
+            public void onSuccess(List<Discover> discovers) {
+                datas.addAll(discovers);
                 if (genre.equals(QUERY_GENRE_COUNTRY)) {
                     mView.sendGenreData(datas);
                 }
