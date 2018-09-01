@@ -30,6 +30,6 @@ public interface GenreContract {
      */
 
     interface Presenter extends BasePresenter<View> {
-       void loadDataGenre(String genre, String genreTitle, int limit, List<Track> tracks);
+       void loadDataGenre(String genre, String genreTitle, int limit);
     }
 }

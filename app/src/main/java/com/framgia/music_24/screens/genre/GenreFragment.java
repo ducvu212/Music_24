@@ -16,7 +16,7 @@ import com.framgia.music_24.data.model.Track;
 import com.framgia.music_24.data.repository.TracksRepository;
 import com.framgia.music_24.data.source.remote.TracksRemoteDataSource;
 import com.framgia.music_24.screens.EndlessScrollListener;
-import com.framgia.music_24.screens.play.PlayScreenFragment;
+import com.framgia.music_24.screens.play.PlayMusicFragment;
 import com.framgia.music_24.utils.DisplayUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -108,7 +108,7 @@ public class GenreFragment extends Fragment
             mPosition = getArguments().getInt(ARGUMENT_POSITION_ITEM);
             String genre = getArguments().getString(ARGUMENT_TITLE_ITEM);
             mTracks = new ArrayList<>();
-            mPresenter.loadDataGenre(mGenres[mPosition], genre, mLimit, mTracks);
+            mPresenter.loadDataGenre(mGenres[mPosition], genre, mLimit);
         }
     }
 
@@ -165,13 +165,13 @@ public class GenreFragment extends Fragment
     @Override
     public void OnItemClick(List<Track> tracks, int position) {
         DisplayUtils.addFragment(mContext.getSupportFragmentManager(),
-                PlayScreenFragment.newInstance(tracks, position), R.id.coordinator_add_play, PlayScreenFragment.TAG);
+                PlayMusicFragment.newInstance(tracks, position), R.id.coordinator_add_play, PlayMusicFragment.TAG);
     }
 
     private void loadMore() {
         mTracks.add(null);
         mLimit += LIMIT_PER_CALL;
         mAdapter.notifyItemInserted(mTracks.size() - NUMBER_ONE);
-        mPresenter.loadDataGenre(mGenres[mPosition], "", mLimit, mTracks);
+        mPresenter.loadDataGenre(mGenres[mPosition], "", mLimit);
     }
 }

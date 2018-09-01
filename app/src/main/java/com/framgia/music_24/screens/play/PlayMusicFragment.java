@@ -1,7 +1,11 @@
 package com.framgia.music_24.screens.play;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,24 +21,26 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import com.framgia.music_24.R;
 import com.framgia.music_24.data.model.Track;
+import com.framgia.music_24.data.repository.TracksRepository;
+import com.framgia.music_24.data.source.remote.TracksRemoteDataSource;
+import com.framgia.music_24.service.MusicService;
+import com.framgia.music_24.service.OnMusicListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.framgia.music_24.BuildConfig.API_KEY;
+import static com.framgia.music_24.data.source.remote.TracksRemoteDataSource.buildStreamUrl;
 import static com.framgia.music_24.screens.discover.DiscoverFragment.ARGUMENT_POSITION_ITEM;
-import static com.framgia.music_24.utils.Constants.STREAM;
-import static com.framgia.music_24.utils.Constants.STREAM_CLIENT_ID;
-import static com.framgia.music_24.utils.Constants.STREAM_TRACK_ID;
-import static com.framgia.music_24.utils.Constants.STREAM_URL;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class PlayScreenFragment extends Fragment implements PlayScreenContract.View, View.OnClickListener {
+public class PlayMusicFragment extends Fragment
+        implements PlayMusicContract.View, View.OnClickListener, OnButtonStateListener {
 
-    public static final String TAG = "PlayScreenFragment";
+    public static final String TAG = "PlayMusicFragment";
     private static final String ARGUMENT_LIST_PLAY = "LIST_TRACKS_PLAYING";
-    private PlayScreenContract.Presenter mPresenter;
+    private FragmentActivity mContext;
+    private PlayMusicContract.Presenter mPresenter;
     private ImageView mImageViewPlay;
     private ImageView mImageViewNext;
     private ImageView mImageViewPrevious;
@@ -47,17 +53,42 @@ public class PlayScreenFragment extends Fragment implements PlayScreenContract.V
     private TextView mTextViewTimeRunning;
     private TextView mTextViewTotalTime;
     private SeekBar mSeekBar;
-    private FragmentActivity mContext;
+    private List<Track> mTracks;
+    private MusicPlayer mPlayer;
+    private boolean mIsConnect;
+    private int mId;
+    private MusicService mMusicService;
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            MusicService.LocalBinder binder = (MusicService.LocalBinder) iBinder;
+            mMusicService = binder.getService();
+            if (mMusicService != null) {
+                mIsConnect = true;
+                mMusicService.registerService(mPlayer);
+                mMusicService.setDataSource(buildStreamUrl(mId));
+                mMediaListener = mMusicService.getListener();
+                mMediaListener.play();
+            }
+        }
 
-    public PlayScreenFragment() {
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            mIsConnect = false;
+            connectService();
+        }
+    };
+    private OnMusicListener mMediaListener;
+
+    public PlayMusicFragment() {
         // Required empty public constructor
     }
 
-    public static PlayScreenFragment newInstance(List<Track> tracks, int position) {
+    public static PlayMusicFragment newInstance(List<Track> tracks, int position) {
         Bundle bundle = new Bundle();
         bundle.putInt(ARGUMENT_POSITION_ITEM, position);
         bundle.putParcelableArrayList(ARGUMENT_LIST_PLAY, (ArrayList<? extends Parcelable>) tracks);
-        PlayScreenFragment fragment = new PlayScreenFragment();
+        PlayMusicFragment fragment = new PlayMusicFragment();
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -71,6 +102,13 @@ public class PlayScreenFragment extends Fragment implements PlayScreenContract.V
     @Override
     public void onStart() {
         super.onStart();
+        mPresenter.onStart();
+        connectService();
+    }
+
+    private void connectService() {
+        final Intent intent = new Intent(getContext(), MusicService.class);
+        mContext.getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -104,8 +142,10 @@ public class PlayScreenFragment extends Fragment implements PlayScreenContract.V
     }
 
     private void initComponents() {
-        mPresenter = new PlayScreenPresenter();
+        mPresenter = new PlayMusicPresenter(
+                TracksRepository.getInstance(TracksRemoteDataSource.getInstance()));
         mPresenter.setView(this);
+        mPlayer = new MusicPlayer(getContext(), this);
         mImageViewDownload.setOnClickListener(this);
         mImageViewFavorite.setOnClickListener(this);
         mImageViewShuffle.setOnClickListener(this);
@@ -122,18 +162,11 @@ public class PlayScreenFragment extends Fragment implements PlayScreenContract.V
     }
 
     private void getDataFromActivity() {
-        List<Track> tracks = new ArrayList<>();
         if (getArguments() != null) {
             int position = getArguments().getInt(ARGUMENT_POSITION_ITEM);
-            tracks = getArguments().getParcelableArrayList(ARGUMENT_LIST_PLAY);
-            int id = tracks.get(position).getId();
-            StringBuilder builder = new StringBuilder();
-            String url = builder.append(STREAM_URL)
-                    .append(STREAM_TRACK_ID)
-                    .append(STREAM)
-                    .append(STREAM_CLIENT_ID)
-                    .append(API_KEY)
-                    .toString();
+            mTracks = getArguments().getParcelableArrayList(ARGUMENT_LIST_PLAY);
+            mId = mTracks.get(position).getId();
+            mPlayer.destroyMedia();
         }
     }
 
@@ -142,7 +175,7 @@ public class PlayScreenFragment extends Fragment implements PlayScreenContract.V
 
         switch (view.getId()) {
             case R.id.imageview_play:
-
+                mMediaListener.play();
                 break;
 
             case R.id.imageview_next:
@@ -174,6 +207,21 @@ public class PlayScreenFragment extends Fragment implements PlayScreenContract.V
                 break;
 
             default:
+        }
+    }
+
+    @Override
+    public void onStop() {
+        mPresenter.onStop();
+        super.onStop();
+    }
+
+    @Override
+    public void updateStateButton(boolean isPlaying) {
+        if (isPlaying) {
+            mImageViewPlay.setImageResource(R.drawable.ic_pause);
+        } else {
+            mImageViewPlay.setImageResource(R.drawable.ic_play);
         }
     }
 }

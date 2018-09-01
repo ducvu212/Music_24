@@ -3,8 +3,9 @@ package com.framgia.music_24.data.source.remote;
 import com.framgia.music_24.BuildConfig;
 import com.framgia.music_24.data.source.CallBack;
 import com.framgia.music_24.data.source.TracksDataSource;
-import java.util.List;
+import com.framgia.music_24.data.source.remote.asynctask.TracksAsyncTask;
 
+import static com.framgia.music_24.BuildConfig.API_KEY;
 import static com.framgia.music_24.utils.Constants.BASE_URL;
 import static com.framgia.music_24.utils.Constants.CLIENT_ID;
 import static com.framgia.music_24.utils.Constants.QUERY_GENRE;
@@ -12,6 +13,10 @@ import static com.framgia.music_24.utils.Constants.QUERY_KIND;
 import static com.framgia.music_24.utils.Constants.QUERY_LIMIT;
 import static com.framgia.music_24.utils.Constants.QUERY_TYPE;
 import static com.framgia.music_24.utils.Constants.QUERY_TYPE_KEY;
+import static com.framgia.music_24.utils.Constants.STREAM;
+import static com.framgia.music_24.utils.Constants.STREAM_CLIENT_ID;
+import static com.framgia.music_24.utils.Constants.STREAM_TRACK_ID;
+import static com.framgia.music_24.utils.Constants.STREAM_URL;
 
 /**
  * Created by CuD HniM on 18/08/24.
@@ -31,8 +36,19 @@ public class TracksRemoteDataSource implements TracksDataSource {
         return sInstance;
     }
 
+    public static String buildStreamUrl(int id) {
+        StringBuilder builder = new StringBuilder();
+        String url = builder.append(STREAM_URL)
+                .append(STREAM_TRACK_ID)
+                .append(STREAM)
+                .append(STREAM_CLIENT_ID)
+                .append(API_KEY)
+                .toString();
+        return url.replace(STREAM_TRACK_ID, String.valueOf(id));
+    }
+
     private void getDataTrackFromUrl(String genre, String genreTitle, String limit,
-            List<Object> datas, CallBack callBack) {
+            CallBack callBack) {
         StringBuilder builder = new StringBuilder();
         builder.append(BASE_URL)
                 .append(QUERY_KIND)
@@ -43,16 +59,16 @@ public class TracksRemoteDataSource implements TracksDataSource {
                 .append(QUERY_LIMIT)
                 .append(limit);
         String url = builder.toString().replace(QUERY_TYPE_KEY, genre);
-        new TracksAsyncTask(genreTitle, datas, callBack).execute(url);
+        new TracksAsyncTask(genreTitle, callBack).execute(url);
     }
 
     @Override
-    public void getTrack(String genre, String genreTitle, List datas, CallBack callBack) {
-        getDataTrackFromUrl(genre, genreTitle, "", datas, callBack);
+    public void getTrack(String genre, String genreTitle, CallBack callBack) {
+        getDataTrackFromUrl(genre, genreTitle, "", callBack);
     }
 
     @Override
-    public void getTrack(String genre, int limit, List datas, CallBack callBack) {
-        getDataTrackFromUrl(genre, "", String.valueOf(limit), datas, callBack);
+    public void getTrack(String genre, int limit, CallBack callBack) {
+        getDataTrackFromUrl(genre, "", String.valueOf(limit), callBack);
     }
 }

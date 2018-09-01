@@ -22,11 +22,16 @@ public abstract class EndlessScrollListener extends RecyclerView.OnScrollListene
         assert mManager != null;
         int totalItemCount = mManager.getItemCount();
         int lastVisibleItem = mManager.findLastVisibleItemPosition();
+        int firstVisiableItem = mManager.findFirstVisibleItemPosition();
+        int visibleItemCount = mManager.getChildCount();
         int visibleThreshold = 5;
         if (mIsLoading && totalItemCount > (lastVisibleItem + visibleThreshold)) {
             mIsLoading = false;
         }
-        if (!mIsLoading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
+        if (!mIsLoading
+                && (visibleItemCount + firstVisiableItem) >= totalItemCount
+                && firstVisiableItem >= 0
+                && totalItemCount >= 10) {
             if (mManager != null) {
                 OnLoadMore();
             }

@@ -33,9 +33,8 @@ public class GenrePresenter implements GenreContract.Presenter {
     }
 
     @Override
-    public void loadDataGenre(final String genre, final String genreTitle, int limit,
-            final List<Track> tracks) {
-        mRepository.getTrack(genre, limit, tracks, new CallBack<List<Track>>() {
+    public void loadDataGenre(final String genre, final String genreTitle, int limit) {
+        mRepository.getTrack(genre, limit, new CallBack<List<Track>>() {
             @Override
             public void onSuccess(List<Track> datas) {
                 if (!genreTitle.equals("")) {
