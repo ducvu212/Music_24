@@ -4,9 +4,9 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-import com.framgia.music_24.data.model.Track;
 import com.framgia.music_24.screens.play.MusicPlayer;
-import java.util.List;
+
+import static android.support.v4.util.Preconditions.checkNotNull;
 
 public class MusicService extends Service implements OnMusicListener {
 
@@ -17,7 +17,7 @@ public class MusicService extends Service implements OnMusicListener {
     }
 
     public void registerService(MusicPlayer musicPlayer) {
-        mMusicPlayer = musicPlayer;
+        mMusicPlayer = checkNotNull(musicPlayer);
     }
 
     public OnMusicListener getListener() {
@@ -45,12 +45,17 @@ public class MusicService extends Service implements OnMusicListener {
     }
 
     @Override
-    public void next(List<Track> tracks, int position) {
-
+    public void next() {
+        mMusicPlayer.next();
     }
 
     @Override
-    public void previous(List<Track> tracks, int position) {
+    public void previous() {
+        mMusicPlayer.previous();
+    }
+
+    @Override
+    public void seekTo(int position) {
 
     }
 
@@ -58,5 +63,35 @@ public class MusicService extends Service implements OnMusicListener {
         public MusicService getService() {
             return MusicService.this;
         }
+    }
+
+    @Override
+    public int getCurrentPosition() {
+        return mMusicPlayer.getCurrentPosition();
+    }
+
+    @Override
+    public int getDuration() {
+        return mMusicPlayer.getDuration();
+    }
+
+    @Override
+    public void setLoopOne() {
+
+    }
+
+    @Override
+    public void setLoopAll() {
+
+    }
+
+    @Override
+    public void setLoopOff() {
+
+    }
+
+    @Override
+    public void setShuffle(boolean isShuffle) {
+
     }
 }
