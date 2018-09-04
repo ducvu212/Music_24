@@ -37,7 +37,8 @@ import static com.framgia.music_24.screens.discover.DiscoverFragment.ARGUMENT_PO
  * A simple {@link Fragment} subclass.
  */
 public class PlayMusicFragment extends Fragment
-        implements PlayMusicContract.View, View.OnClickListener, OnUpdateUiListener {
+        implements PlayMusicContract.View, View.OnClickListener, OnUpdateUiListener,
+        SeekBar.OnSeekBarChangeListener {
 
     public static final String TAG = "PlayMusicFragment";
     private static final String ARGUMENT_LIST_PLAY = "LIST_TRACKS_PLAYING";
@@ -64,6 +65,8 @@ public class PlayMusicFragment extends Fragment
     private boolean mIsShuffle;
     private Handler mHandler;
     private OnMusicListener mMediaListener;
+    private Runnable mRunnable;
+
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -73,6 +76,7 @@ public class PlayMusicFragment extends Fragment
                 service.registerService(mPlayer);
                 service.setDataSource(buildStreamUrl(mId));
                 mMediaListener = service.getListener();
+                mHandler.postDelayed(mRunnable, TIME_UPDATE_SEEKBAR_LOOP);
             }
         }
 
@@ -148,6 +152,7 @@ public class PlayMusicFragment extends Fragment
         mPresenter = new PlayMusicPresenter();
         setupListener();
         mHandler = new Handler();
+        updateSeekBar();
     }
 
     private void setupListener() {
@@ -159,6 +164,7 @@ public class PlayMusicFragment extends Fragment
         mImageViewPrevious.setOnClickListener(this);
         mImageViewNext.setOnClickListener(this);
         mImageViewPlay.setOnClickListener(this);
+        mSeekBar.setOnSeekBarChangeListener(this);
     }
 
     @Override
@@ -214,9 +220,11 @@ public class PlayMusicFragment extends Fragment
                 break;
 
             case R.id.imageview_loop:
+
                 break;
 
             case R.id.imageview_shuffle:
+
                 break;
 
             case R.id.imageview_favorite:
@@ -233,6 +241,18 @@ public class PlayMusicFragment extends Fragment
 
             default:
         }
+    }
+
+    private void updateSeekBar() {
+        mRunnable = new Runnable() {
+            @Override
+            public void run() {
+                long timeRunning = mMediaListener.getCurrentPosition();
+                mSeekBar.setProgress((int) timeRunning);
+                mTextViewTimeRunning.setText(StringUtils.convertMilisecToMinute(timeRunning));
+                mHandler.postDelayed(mRunnable, TIME_UPDATE_SEEKBAR);
+            }
+        };
     }
 
     @Override
@@ -256,17 +276,34 @@ public class PlayMusicFragment extends Fragment
     }
 
     @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        mSeekbarPosition = progress;
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        mTextViewTimeRunning.setText(StringUtils.convertMilisecToMinute(mSeekbarPosition));
+        mMediaListener.seekTo(mSeekbarPosition);
+    }
+
+    @Override
     public void OnPlayComplete() {
 
     }
 
     @Override
     public void OnBuffer(int position) {
-
+        mSeekBar.setSecondaryProgress(position);
     }
 
     @Override
     public void onDestroy() {
+        mHandler.removeCallbacks(mRunnable);
         super.onDestroy();
     }
 }

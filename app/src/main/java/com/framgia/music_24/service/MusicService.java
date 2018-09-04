@@ -56,7 +56,7 @@ public class MusicService extends Service implements OnMusicListener {
 
     @Override
     public void seekTo(int position) {
-
+        mMusicPlayer.seekTo(position);
     }
 
     public class LocalBinder extends Binder {

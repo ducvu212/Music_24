@@ -126,6 +126,10 @@ public class MusicPlayer
         updateUiState(mTracks.get(mPosition));
     }
 
+    public void seekTo(int position) {
+        mMediaPlayer.seekTo(position);
+    }
+
     public int getCurrentPosition() {
         return mMediaPlayer == null ? 0 : mMediaPlayer.getCurrentPosition();
     }
