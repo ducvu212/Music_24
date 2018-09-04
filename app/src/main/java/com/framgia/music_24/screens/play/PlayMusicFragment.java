@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -19,12 +20,13 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.framgia.music_24.R;
 import com.framgia.music_24.data.model.Track;
-import com.framgia.music_24.data.repository.TracksRepository;
-import com.framgia.music_24.data.source.remote.TracksRemoteDataSource;
 import com.framgia.music_24.service.MusicService;
 import com.framgia.music_24.service.OnMusicListener;
+import com.framgia.music_24.utils.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,10 +37,12 @@ import static com.framgia.music_24.screens.discover.DiscoverFragment.ARGUMENT_PO
  * A simple {@link Fragment} subclass.
  */
 public class PlayMusicFragment extends Fragment
-        implements PlayMusicContract.View, View.OnClickListener, OnButtonStateListener {
+        implements PlayMusicContract.View, View.OnClickListener, OnUpdateUiListener {
 
     public static final String TAG = "PlayMusicFragment";
     private static final String ARGUMENT_LIST_PLAY = "LIST_TRACKS_PLAYING";
+    private static final int TIME_UPDATE_SEEKBAR = 1000;
+    private static final int TIME_UPDATE_SEEKBAR_LOOP = 300;
     private FragmentActivity mContext;
     private PlayMusicContract.Presenter mPresenter;
     private ImageView mImageViewPlay;
@@ -48,37 +52,35 @@ public class PlayMusicFragment extends Fragment
     private ImageView mImageViewShuffle;
     private ImageView mImageViewFavorite;
     private ImageView mImageViewDownload;
+    private ImageView mImageViewTrack;
     private TextView mTextViewName;
     private TextView mTextViewSinger;
     private TextView mTextViewTimeRunning;
     private TextView mTextViewTotalTime;
     private SeekBar mSeekBar;
-    private List<Track> mTracks;
     private MusicPlayer mPlayer;
-    private boolean mIsConnect;
     private int mId;
-    private MusicService mMusicService;
+    private int mSeekbarPosition;
+    private boolean mIsShuffle;
+    private Handler mHandler;
+    private OnMusicListener mMediaListener;
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             MusicService.LocalBinder binder = (MusicService.LocalBinder) iBinder;
-            mMusicService = binder.getService();
-            if (mMusicService != null) {
-                mIsConnect = true;
-                mMusicService.registerService(mPlayer);
-                mMusicService.setDataSource(buildStreamUrl(mId));
-                mMediaListener = mMusicService.getListener();
-                mMediaListener.play();
+            MusicService service = binder.getService();
+            if (service != null) {
+                service.registerService(mPlayer);
+                service.setDataSource(buildStreamUrl(mId));
+                mMediaListener = service.getListener();
             }
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
-            mIsConnect = false;
             connectService();
         }
     };
-    private OnMusicListener mMediaListener;
 
     public PlayMusicFragment() {
         // Required empty public constructor
@@ -122,7 +124,6 @@ public class PlayMusicFragment extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initViews(view);
-        initComponents();
     }
 
     private void initViews(View view) {
@@ -133,19 +134,24 @@ public class PlayMusicFragment extends Fragment
         mImageViewPrevious = view.findViewById(R.id.imageview_previous);
         mImageViewNext = view.findViewById(R.id.imageview_next);
         mImageViewPlay = view.findViewById(R.id.imageview_play);
+        mImageViewTrack = view.findViewById(R.id.imageview_track);
         mTextViewTimeRunning = view.findViewById(R.id.textview_time_running);
         mTextViewSinger = view.findViewById(R.id.textview_singer);
-        mTextViewName = view.findViewById(R.id.textview_name);
+        mTextViewName = view.findViewById(R.id.textview_name_track);
         mTextViewTotalTime = view.findViewById(R.id.textview_time_total);
+        mSeekBar = view.findViewById(R.id.seekBar);
         FrameLayout frameLayout = view.findViewById(R.id.frame_play);
         frameLayout.setOnClickListener(this);
     }
 
     private void initComponents() {
-        mPresenter = new PlayMusicPresenter(
-                TracksRepository.getInstance(TracksRemoteDataSource.getInstance()));
+        mPresenter = new PlayMusicPresenter();
+        setupListener();
+        mHandler = new Handler();
+    }
+
+    private void setupListener() {
         mPresenter.setView(this);
-        mPlayer = new MusicPlayer(getContext(), this);
         mImageViewDownload.setOnClickListener(this);
         mImageViewFavorite.setOnClickListener(this);
         mImageViewShuffle.setOnClickListener(this);
@@ -158,16 +164,37 @@ public class PlayMusicFragment extends Fragment
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        initComponents();
         getDataFromActivity();
     }
 
     private void getDataFromActivity() {
         if (getArguments() != null) {
             int position = getArguments().getInt(ARGUMENT_POSITION_ITEM);
-            mTracks = getArguments().getParcelableArrayList(ARGUMENT_LIST_PLAY);
-            mId = mTracks.get(position).getId();
-            mPlayer.destroyMedia();
+            List<Track> tracks = getArguments().getParcelableArrayList(ARGUMENT_LIST_PLAY);
+            mId = tracks.get(position).getId();
+            if (mPlayer != null) {
+                mPlayer.destroyMedia();
+            }
+            mPlayer = MusicPlayer.getInstance(getContext(), tracks, position, this);
+            showTrackInfo(tracks.get(position));
         }
+    }
+
+    private void showTrackInfo(Track track) {
+        setImageTrack(track.getArtworkUrl());
+        mTextViewName.setText(track.getTitle());
+        mTextViewSinger.setText(track.getUser().getUsername());
+        mTextViewTotalTime.setText(StringUtils.convertMilisecToMinute(track.getDuration()));
+        mSeekBar.setMax(track.getDuration());
+    }
+
+    private void setImageTrack(String url) {
+        Glide.with(mContext)
+                .load(url)
+                .apply(new RequestOptions().placeholder(R.drawable.ic_image_place_holder)
+                        .error(R.drawable.ic_load_image_error))
+                .into(mImageViewTrack);
     }
 
     @Override
@@ -179,19 +206,17 @@ public class PlayMusicFragment extends Fragment
                 break;
 
             case R.id.imageview_next:
-
+                mMediaListener.next();
                 break;
 
             case R.id.imageview_previous:
-
+                mMediaListener.previous();
                 break;
 
             case R.id.imageview_loop:
-
                 break;
 
             case R.id.imageview_shuffle:
-
                 break;
 
             case R.id.imageview_favorite:
@@ -223,5 +248,25 @@ public class PlayMusicFragment extends Fragment
         } else {
             mImageViewPlay.setImageResource(R.drawable.ic_play);
         }
+    }
+
+    @Override
+    public void OnUpdateUiPlay(Track track) {
+        showTrackInfo(track);
+    }
+
+    @Override
+    public void OnPlayComplete() {
+
+    }
+
+    @Override
+    public void OnBuffer(int position) {
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 }

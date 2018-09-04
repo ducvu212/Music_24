@@ -1,8 +1,5 @@
 package com.framgia.music_24.service;
 
-import com.framgia.music_24.data.model.Track;
-import java.util.List;
-
 /**
  * Created by CuD HniM on 18/08/30.
  */
@@ -12,7 +9,21 @@ public interface OnMusicListener {
 
     void play();
 
-    void next(List<Track> tracks, int position);
+    void next();
 
-    void previous(List<Track> tracks, int position);
+    void previous();
+
+    void seekTo(int position);
+
+    int getCurrentPosition();
+
+    int getDuration();
+
+    void setLoopOne();
+
+    void setLoopAll();
+
+    void setLoopOff();
+
+    void setShuffle(boolean shuffle);
 }
