@@ -64,6 +64,7 @@ public class PlayMusicFragment extends Fragment
     private TextView mTextViewTotalTime;
     private SeekBar mSeekBar;
     private MusicPlayer mPlayer;
+    private Track mCurrentTrack;
     private int mId;
     private int mSeekbarPosition;
     private boolean mIsShuffle;
@@ -79,8 +80,8 @@ public class PlayMusicFragment extends Fragment
             if (mService != null) {
                 mService.registerService(mPlayer);
                 mService.setDataSource(buildStreamUrl(mId));
-                mMediaListener = mService.getListener();
                 setupPlaySetting();
+                mMediaListener = mService.getListener();
                 mHandler.postDelayed(mRunnable, TIME_UPDATE_SEEKBAR_LOOP);
             }
         }
@@ -153,6 +154,13 @@ public class PlayMusicFragment extends Fragment
         frameLayout.setOnClickListener(this);
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        initComponents();
+        getDataFromActivity();
+    }
+
     private void initComponents() {
         mPresenter = new PlayMusicPresenter(PlaySettingRepository.getInstance(
                 PlaySettingLocalDataSource.getInstance(mContext)));
@@ -173,15 +181,14 @@ public class PlayMusicFragment extends Fragment
         mSeekBar.setOnSeekBarChangeListener(this);
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        initComponents();
-        getDataFromActivity();
-    }
-
     private void setupPlaySetting() {
         Setting setting = mPresenter.getSetting();
+        mIsShuffle = setting.isShuffle();
+        if (mIsShuffle) {
+            mImageViewShuffle.setImageResource(R.drawable.ic_shuffle_on);
+        } else {
+            mImageViewShuffle.setImageResource(R.drawable.ic_shuffle_off);
+        }
         switch (setting.getLoopMode()) {
             case LoopType.NO_LOOP:
                 mImageViewLoop.setImageResource(R.drawable.ic_loop_off);
@@ -195,6 +202,24 @@ public class PlayMusicFragment extends Fragment
                 mImageViewLoop.setImageResource(R.drawable.ic_loop_on);
                 break;
         }
+    }
+
+    private void checkShuffle(boolean isShuffle) {
+        if (isShuffle) {
+            mImageViewShuffle.setImageResource(R.drawable.ic_shuffle_off);
+            DisplayUtils.makeToast(mContext, getString(R.string.play_shuffle_off));
+        } else {
+            mImageViewShuffle.setImageResource(R.drawable.ic_shuffle_on);
+            DisplayUtils.makeToast(mContext, getString(R.string.play_shuffle_on));
+        }
+    }
+
+    private void setShuffle() {
+        Setting setting = mPresenter.getSetting();
+        checkShuffle(mIsShuffle);
+        mIsShuffle = !mIsShuffle;
+        setting.setShuffle(mIsShuffle);
+        mPresenter.saveSetting(setting);
     }
 
     private void setLoop() {
@@ -246,11 +271,13 @@ public class PlayMusicFragment extends Fragment
     }
 
     private void setImageTrack(String url) {
-        Glide.with(mContext)
-                .load(url)
-                .apply(new RequestOptions().placeholder(R.drawable.ic_image_place_holder)
-                        .error(R.drawable.ic_load_image_error))
-                .into(mImageViewTrack);
+        if (!mContext.isFinishing()) {
+            Glide.with(mContext)
+                    .load(url)
+                    .apply(new RequestOptions().placeholder(R.drawable.ic_image_place_holder)
+                            .error(R.drawable.ic_load_image_error))
+                    .into(mImageViewTrack);
+        }
     }
 
     @Override
@@ -274,7 +301,8 @@ public class PlayMusicFragment extends Fragment
                 break;
 
             case R.id.imageview_shuffle:
-
+                setShuffle();
+                mMediaListener.setShuffle(mIsShuffle);
                 break;
 
             case R.id.imageview_favorite:
@@ -322,6 +350,7 @@ public class PlayMusicFragment extends Fragment
 
     @Override
     public void OnUpdateUiPlay(Track track) {
+        mCurrentTrack = track;
         showTrackInfo(track);
     }
 

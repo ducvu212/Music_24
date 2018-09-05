@@ -7,7 +7,10 @@ import android.net.Uri;
 import com.framgia.music_24.data.model.Track;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
 import static com.framgia.music_24.data.source.remote.TracksRemoteDataSource.buildStreamUrl;
 
@@ -157,6 +160,29 @@ public class MusicPlayer
     public void setLoopOff() {
         mIsLoopAll = false;
         mIsLoopOne = false;
+    }
+
+    public void shuffle() {
+        Track track = mTracks.get(mPosition);
+        mTracks.remove(mPosition);
+        swapList();
+        mTracks.add(mPosition, track);
+    }
+
+    private void swapList() {
+        Set<Track> newTracks = new HashSet<>();
+        while (newTracks.size() != mTracks.size()) {
+            Random random = new Random();
+            newTracks.add(mTracks.get(random.nextInt(mTracks.size())));
+        }
+        mTracks.clear();
+        mTracks.addAll(newTracks);
+    }
+
+    public void unShuffle() {
+        mTracks.clear();
+        mTracks.addAll(mUnShuffleTracks);
+        mPosition = mTracks.indexOf(mTracks.get(mPosition));
     }
 
     @Override

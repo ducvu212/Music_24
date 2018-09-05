@@ -92,7 +92,21 @@ public class MusicService extends Service implements OnMusicListener {
         mMusicPlayer.setLoopOff();
     }
 
+    @Override
+    public void setShuffle(boolean isShuffle) {
+        if (isShuffle) {
+            shuffle();
+        } else {
+            unShuffle();
+        }
+    }
+
     public void checkStatus(Setting setting) {
+        if (setting.isShuffle()) {
+            shuffle();
+        } else {
+            unShuffle();
+        }
         switch (setting.getLoopMode()) {
             case LoopType.LOOP_ALL:
                 setLoopAll();
@@ -108,8 +122,11 @@ public class MusicService extends Service implements OnMusicListener {
         }
     }
 
-    @Override
-    public void setShuffle(boolean isShuffle) {
+    private void unShuffle() {
+        mMusicPlayer.unShuffle();
+    }
 
+    private void shuffle() {
+        mMusicPlayer.shuffle();
     }
 }
