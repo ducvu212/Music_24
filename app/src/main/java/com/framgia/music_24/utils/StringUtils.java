@@ -21,9 +21,8 @@ public final class StringUtils {
     }
 
     public static String convertMilisecToMinute(long milisec) {
-        return String.format("%d:%d ", TimeUnit.MILLISECONDS.toMinutes(milisec),
+        return String.format("%d : %02d", TimeUnit.MILLISECONDS.toMinutes(milisec),
                 TimeUnit.MILLISECONDS.toSeconds(milisec) - TimeUnit.MINUTES.toSeconds(
-                        TimeUnit.MILLISECONDS.
-                                toMinutes(milisec)));
+                        TimeUnit.MILLISECONDS.toMinutes(milisec)));
     }
 }
