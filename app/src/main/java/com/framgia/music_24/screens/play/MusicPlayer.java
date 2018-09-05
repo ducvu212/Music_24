@@ -32,8 +32,10 @@ public class MusicPlayer
     private MusicPlayer(Context context, List<Track> tracks, int position,
             OnUpdateUiListener onListener) {
         mContext = context;
+        mUnShuffleTracks = new ArrayList<>();
         mTracks = new ArrayList<>();
         mTracks.addAll(tracks);
+        mUnShuffleTracks.addAll(tracks);
         mPosition = position;
         mMediaState = onListener;
     }
@@ -72,12 +74,14 @@ public class MusicPlayer
     }
 
     public void play() {
-        if (mMediaPlayer != null && !mMediaPlayer.isPlaying()) {
-            mMediaPlayer.start();
-            mMediaState.updateStateButton(true);
-        } else {
-            mMediaPlayer.pause();
-            mMediaState.updateStateButton(false);
+        if (mMediaPlayer != null) {
+            if (!mMediaPlayer.isPlaying()) {
+                mMediaPlayer.start();
+                mMediaState.updateStateButton(true);
+            } else {
+                mMediaPlayer.pause();
+                mMediaState.updateStateButton(false);
+            }
         }
     }
 
@@ -136,6 +140,23 @@ public class MusicPlayer
 
     public int getDuration() {
         return mMediaPlayer.getDuration();
+    }
+
+    public void setLoopOne() {
+        mMediaPlayer.setLooping(true);
+        mIsLoopOne = true;
+        mIsLoopAll = false;
+    }
+
+    public void setLoopAll() {
+        mMediaPlayer.setLooping(false);
+        mIsLoopOne = false;
+        mIsLoopAll = true;
+    }
+
+    public void setLoopOff() {
+        mIsLoopAll = false;
+        mIsLoopOne = false;
     }
 
     @Override

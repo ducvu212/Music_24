@@ -4,6 +4,8 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import com.framgia.music_24.data.model.Setting;
+import com.framgia.music_24.screens.play.LoopType;
 import com.framgia.music_24.screens.play.MusicPlayer;
 
 import static android.support.v4.util.Preconditions.checkNotNull;
@@ -77,17 +79,33 @@ public class MusicService extends Service implements OnMusicListener {
 
     @Override
     public void setLoopOne() {
-
+        mMusicPlayer.setLoopOne();
     }
 
     @Override
     public void setLoopAll() {
-
+        mMusicPlayer.setLoopAll();
     }
 
     @Override
     public void setLoopOff() {
+        mMusicPlayer.setLoopOff();
+    }
 
+    public void checkStatus(Setting setting) {
+        switch (setting.getLoopMode()) {
+            case LoopType.LOOP_ALL:
+                setLoopAll();
+                break;
+
+            case LoopType.LOOP_ONE:
+                setLoopOne();
+                break;
+
+            case LoopType.NO_LOOP:
+                setLoopOff();
+                break;
+        }
     }
 
     @Override

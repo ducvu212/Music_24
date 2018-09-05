@@ -1,5 +1,6 @@
 package com.framgia.music_24.screens.play;
 
+import com.framgia.music_24.data.model.Setting;
 import com.framgia.music_24.screens.base.BasePresenter;
 
 /**
@@ -20,6 +21,8 @@ public interface PlayMusicContract {
      */
 
     interface Presenter extends BasePresenter<View> {
+        void saveSetting(Setting setting);
 
+        Setting getSetting();
     }
 }

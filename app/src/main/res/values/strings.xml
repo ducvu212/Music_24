@@ -26,4 +26,11 @@
     <string name="discover_ambient">Ambient</string>
     <string name="discover_classical">Classical </string>
     <string name="discover_country">Country </string>
+    <string name="play_loop_one">Loop One Mode On</string>
+    <string name="play_loop_off">Loop Off</string>
+    <string name="play_loop_all">Loop All Mode On</string>
+    <string name="play_shuffle_on">Shuffle Mode On</string>
+    <string name="play_shuffle_off">Shuffle Mode Off</string>
+    <string name="play_favorite">Add to Favorite</string>
+    <string name="play_un_favorite">Un Favorite</string>
 </resources>

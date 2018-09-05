@@ -23,9 +23,13 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.framgia.music_24.R;
+import com.framgia.music_24.data.model.Setting;
 import com.framgia.music_24.data.model.Track;
+import com.framgia.music_24.data.repository.PlaySettingRepository;
+import com.framgia.music_24.data.source.local.PlaySettingLocalDataSource;
 import com.framgia.music_24.service.MusicService;
 import com.framgia.music_24.service.OnMusicListener;
+import com.framgia.music_24.utils.DisplayUtils;
 import com.framgia.music_24.utils.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,16 +70,17 @@ public class PlayMusicFragment extends Fragment
     private Handler mHandler;
     private OnMusicListener mMediaListener;
     private Runnable mRunnable;
-
+    private MusicService mService;
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             MusicService.LocalBinder binder = (MusicService.LocalBinder) iBinder;
-            MusicService service = binder.getService();
-            if (service != null) {
-                service.registerService(mPlayer);
-                service.setDataSource(buildStreamUrl(mId));
-                mMediaListener = service.getListener();
+            mService = binder.getService();
+            if (mService != null) {
+                mService.registerService(mPlayer);
+                mService.setDataSource(buildStreamUrl(mId));
+                mMediaListener = mService.getListener();
+                setupPlaySetting();
                 mHandler.postDelayed(mRunnable, TIME_UPDATE_SEEKBAR_LOOP);
             }
         }
@@ -149,7 +154,8 @@ public class PlayMusicFragment extends Fragment
     }
 
     private void initComponents() {
-        mPresenter = new PlayMusicPresenter();
+        mPresenter = new PlayMusicPresenter(PlaySettingRepository.getInstance(
+                PlaySettingLocalDataSource.getInstance(mContext)));
         setupListener();
         mHandler = new Handler();
         updateSeekBar();
@@ -172,6 +178,50 @@ public class PlayMusicFragment extends Fragment
         super.onActivityCreated(savedInstanceState);
         initComponents();
         getDataFromActivity();
+    }
+
+    private void setupPlaySetting() {
+        Setting setting = mPresenter.getSetting();
+        switch (setting.getLoopMode()) {
+            case LoopType.NO_LOOP:
+                mImageViewLoop.setImageResource(R.drawable.ic_loop_off);
+                break;
+
+            case LoopType.LOOP_ONE:
+                mImageViewLoop.setImageResource(R.drawable.ic_loop_one_on);
+                break;
+
+            case LoopType.LOOP_ALL:
+                mImageViewLoop.setImageResource(R.drawable.ic_loop_on);
+                break;
+        }
+    }
+
+    private void setLoop() {
+        Setting setting = mPresenter.getSetting();
+        switch (setting.getLoopMode()) {
+            case LoopType.NO_LOOP:
+                mImageViewLoop.setImageResource(R.drawable.ic_loop_one_on);
+                mMediaListener.setLoopOne();
+                setting.setLoopMode(LoopType.LOOP_ONE);
+                DisplayUtils.makeToast(mContext, getString(R.string.play_loop_one));
+                break;
+
+            case LoopType.LOOP_ONE:
+                mImageViewLoop.setImageResource(R.drawable.ic_loop_on);
+                mMediaListener.setLoopAll();
+                setting.setLoopMode(LoopType.LOOP_ALL);
+                DisplayUtils.makeToast(mContext, getString(R.string.play_loop_all));
+                break;
+
+            case LoopType.LOOP_ALL:
+                mImageViewLoop.setImageResource(R.drawable.ic_loop_off);
+                mMediaListener.setLoopOff();
+                setting.setLoopMode(LoopType.NO_LOOP);
+                DisplayUtils.makeToast(mContext, getString(R.string.play_loop_off));
+                break;
+        }
+        mPresenter.saveSetting(setting);
     }
 
     private void getDataFromActivity() {
@@ -220,7 +270,7 @@ public class PlayMusicFragment extends Fragment
                 break;
 
             case R.id.imageview_loop:
-
+                setLoop();
                 break;
 
             case R.id.imageview_shuffle:
@@ -293,7 +343,10 @@ public class PlayMusicFragment extends Fragment
 
     @Override
     public void OnPlayComplete() {
-
+        if (mMediaListener != null) {
+            Setting setting = mPresenter.getSetting();
+            mService.checkStatus(setting);
+        }
     }
 
     @Override
