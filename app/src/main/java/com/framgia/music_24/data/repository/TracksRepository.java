@@ -1,7 +1,10 @@
 package com.framgia.music_24.data.repository;
 
+import com.framgia.music_24.data.model.Track;
 import com.framgia.music_24.data.source.CallBack;
+import com.framgia.music_24.data.source.local.TrackLocalDataSource;
 import com.framgia.music_24.data.source.remote.TracksRemoteDataSource;
+import java.util.List;
 
 import static android.support.v4.util.Preconditions.checkNotNull;
 
@@ -12,17 +15,22 @@ public class TracksRepository {
 
     private static TracksRepository sInstance;
     private TracksRemoteDataSource mRemoteDataSource;
+    private TrackLocalDataSource mLocalDataSource;
 
-    private TracksRepository(TracksRemoteDataSource tracksRemoteDataSource) {
+    private TracksRepository(TracksRemoteDataSource tracksRemoteDataSource,
+            TrackLocalDataSource trackLocalDataSource) {
         mRemoteDataSource = checkNotNull(tracksRemoteDataSource);
+        mLocalDataSource = checkNotNull(trackLocalDataSource);
     }
 
     public static synchronized TracksRepository getInstance(
-            TracksRemoteDataSource tracksRemoteDataSource) {
+            TracksRemoteDataSource tracksRemoteDataSource,
+            TrackLocalDataSource trackLocalDataSource) {
         if (sInstance == null) {
-            synchronized (TracksRemoteDataSource.class) {
+            synchronized (TracksRepository.class) {
                 if (sInstance == null) {
-                    sInstance = new TracksRepository(checkNotNull(tracksRemoteDataSource));
+                    sInstance = new TracksRepository(checkNotNull(tracksRemoteDataSource),
+                            checkNotNull(trackLocalDataSource));
                 }
             }
         }
@@ -35,5 +43,21 @@ public class TracksRepository {
 
     public void getTrack(String genre, int limit, CallBack callBack) {
         mRemoteDataSource.getTrack(genre, limit, callBack);
+    }
+
+    public void addTrack(Track track) {
+        mLocalDataSource.addTrack(track);
+    }
+
+    public List<Track> getAllTracks() {
+        return mLocalDataSource.getAllTracks();
+    }
+
+    public void updateFavorite(Track track, int fav) {
+        mLocalDataSource.updateFavorite(track, fav);
+    }
+
+    public boolean isExistRow(Track track) {
+        return mLocalDataSource.isExistRow(track);
     }
 }
