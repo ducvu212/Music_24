@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import com.framgia.music_24.R;
 import com.framgia.music_24.data.model.Discover;
 import com.framgia.music_24.data.repository.TracksRepository;
+import com.framgia.music_24.data.source.local.TrackLocalDataSource;
+import com.framgia.music_24.data.source.local.config.sqlite.TrackDatabaseHelper;
 import com.framgia.music_24.data.source.remote.TracksRemoteDataSource;
 import com.framgia.music_24.utils.DisplayUtils;
 import java.util.ArrayList;
@@ -30,7 +32,8 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.color_deep_orange_accent_400));
+            getWindow().setStatusBarColor(
+                    ContextCompat.getColor(this, R.color.color_deep_orange_accent_400));
         }
         setContentView(R.layout.activity_splash);
         initComponents();
@@ -38,7 +41,8 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
 
     private void initComponents() {
         mPresenter = new SplashPresenter(
-                TracksRepository.getInstance(TracksRemoteDataSource.getInstance()));
+                TracksRepository.getInstance(TracksRemoteDataSource.getInstance(),
+                        TrackLocalDataSource.getInstance(TrackDatabaseHelper.getInstance(this))));
         mPresenter.setView(this);
         getDataGenre();
     }

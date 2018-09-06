@@ -14,7 +14,11 @@ public interface PlayMusicContract {
      */
 
     interface View {
+        void initData(Track track);
 
+        void downloadSuccess(String url);
+
+        void downloadError(String e);
     }
 
     /**
@@ -28,9 +32,14 @@ public interface PlayMusicContract {
 
         void editFavorite(Track track, int fav);
 
+        void editDownload(Track track, int download, String uri);
+
         void addTracks(Track track);
 
         boolean isExistRow(Track track);
 
+        void downloadTrack(String title);
+
+        void findTrackById(String id);
     }
 }

@@ -4,6 +4,7 @@ import com.framgia.music_24.data.model.Setting;
 import com.framgia.music_24.data.model.Track;
 import com.framgia.music_24.data.repository.PlaySettingRepository;
 import com.framgia.music_24.data.repository.TracksRepository;
+import com.framgia.music_24.data.source.TracksDataSource;
 
 /**
  * Created by CuD HniM on 18/08/29.
@@ -18,6 +19,7 @@ public class PlayMusicPresenter implements PlayMusicContract.Presenter {
         mRepository = repository;
         mTracksRepository = tracksRepository;
     }
+
     @Override
     public void setView(PlayMusicContract.View view) {
         mView = view;
@@ -56,5 +58,31 @@ public class PlayMusicPresenter implements PlayMusicContract.Presenter {
     @Override
     public boolean isExistRow(Track track) {
         return mTracksRepository.isExistRow(track);
+    }
+
+    @Override
+    public void downloadTrack(String title) {
+        mTracksRepository.downloadTrack(title,
+                new TracksDataSource.TrackRemoteDataSource.OnDownloadListener() {
+                    @Override
+                    public void OnSuccess(String url) {
+                        mView.downloadSuccess(url);
+                    }
+
+                    @Override
+                    public void OnError(String e) {
+                        mView.downloadError(e);
+                    }
+                });
+    }
+
+    @Override
+    public void findTrackById(String id) {
+        mView.initData(mTracksRepository.findTrackById(id));
+    }
+
+    @Override
+    public void editDownload(Track track, int download, String uri) {
+        mTracksRepository.updateDownload(track, download, uri);
     }
 }
