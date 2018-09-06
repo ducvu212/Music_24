@@ -7,8 +7,36 @@ import java.util.List;
 /**
  * Created by CuD HniM on 18/08/24.
  */
-public interface TracksDataSource {
-    void getTrack(String genre, String genreTitle, CallBack<List<Discover>> callBack);
 
-    void getTrack(String genre, int limit, CallBack<List<Track>> callBack);
+public interface TracksDataSource {
+
+    interface TrackRemoteDataSource {
+        void getTrack(String genre, String genreTitle, CallBack<List<Discover>> callBack);
+
+        void getTrack(String genre, int limit, CallBack<List<Track>> callBack);
+
+        void downloadTrack(String url, String title, OnDownloadListener onDownloadListener);
+
+        interface OnDownloadListener {
+            void OnSuccess(String url);
+
+            void OnError(Exception e);
+
+            void OnDownloaded(int progress);
+        }
+    }
+
+    interface TrackLocalDataSource {
+        void addTrack(Track track);
+
+        List<Track> getAllTracks();
+
+        void updateFavorite(Track track, int fav);
+
+        void updateDownload(Track track, int download, String uri);
+
+        boolean isExistRow(Track track);
+
+        Track findTrackById(String id);
+    }
 }

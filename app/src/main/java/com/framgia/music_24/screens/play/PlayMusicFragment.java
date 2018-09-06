@@ -26,7 +26,11 @@ import com.framgia.music_24.R;
 import com.framgia.music_24.data.model.Setting;
 import com.framgia.music_24.data.model.Track;
 import com.framgia.music_24.data.repository.PlaySettingRepository;
+import com.framgia.music_24.data.repository.TracksRepository;
 import com.framgia.music_24.data.source.local.PlaySettingLocalDataSource;
+import com.framgia.music_24.data.source.local.TrackLocalDataSource;
+import com.framgia.music_24.data.source.local.config.sqlite.TrackDatabaseHelper;
+import com.framgia.music_24.data.source.remote.TracksRemoteDataSource;
 import com.framgia.music_24.service.MusicService;
 import com.framgia.music_24.service.OnMusicListener;
 import com.framgia.music_24.utils.DisplayUtils;
@@ -48,6 +52,8 @@ public class PlayMusicFragment extends Fragment
     private static final String ARGUMENT_LIST_PLAY = "LIST_TRACKS_PLAYING";
     private static final int TIME_UPDATE_SEEKBAR = 1000;
     private static final int TIME_UPDATE_SEEKBAR_LOOP = 300;
+    private static final int PLAY_FAVORITE = 1;
+    private static final int PLAY_UN_FAVORITE = 0;
     private FragmentActivity mContext;
     private PlayMusicContract.Presenter mPresenter;
     private ImageView mImageViewPlay;
@@ -162,8 +168,11 @@ public class PlayMusicFragment extends Fragment
     }
 
     private void initComponents() {
-        mPresenter = new PlayMusicPresenter(PlaySettingRepository.getInstance(
-                PlaySettingLocalDataSource.getInstance(mContext)));
+        mPresenter = new PlayMusicPresenter(
+                PlaySettingRepository.getInstance(PlaySettingLocalDataSource.getInstance(mContext)),
+                TracksRepository.getInstance(TracksRemoteDataSource.getInstance(),
+                        TrackLocalDataSource.getInstance(
+                                TrackDatabaseHelper.getInstance(mContext))));
         setupListener();
         mHandler = new Handler();
         updateSeekBar();
@@ -306,7 +315,7 @@ public class PlayMusicFragment extends Fragment
                 break;
 
             case R.id.imageview_favorite:
-
+                setFavorite();
                 break;
 
             case R.id.imageview_download:
@@ -318,6 +327,20 @@ public class PlayMusicFragment extends Fragment
                 break;
 
             default:
+        }
+    }
+
+    private void setFavorite() {
+        if (mCurrentTrack.getFavorite() == PLAY_UN_FAVORITE) {
+            mImageViewFavorite.setImageResource(R.drawable.ic_favorite);
+            mCurrentTrack.setFavorite(PLAY_FAVORITE);
+            DisplayUtils.makeToast(mContext, getString(R.string.play_favorite));
+            mPresenter.editFavorite(mCurrentTrack, PLAY_FAVORITE);
+        } else {
+            mImageViewFavorite.setImageResource(R.drawable.ic_un_favorite);
+            mCurrentTrack.setFavorite(PLAY_UN_FAVORITE);
+            DisplayUtils.makeToast(mContext, getString(R.string.play_un_favorite));
+            mPresenter.editFavorite(mCurrentTrack, PLAY_UN_FAVORITE);
         }
     }
 

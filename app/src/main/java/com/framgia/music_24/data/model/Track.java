@@ -9,7 +9,6 @@ import static com.framgia.music_24.data.model.Track.JsonParamKey.TRACK_ARTWORK_U
 import static com.framgia.music_24.data.model.Track.JsonParamKey.TRACK_CREATED_AT;
 import static com.framgia.music_24.data.model.Track.JsonParamKey.TRACK_DESCRIPTION;
 import static com.framgia.music_24.data.model.Track.JsonParamKey.TRACK_DISPLAY_DATE;
-import static com.framgia.music_24.data.model.Track.JsonParamKey.TRACK_DOWNLOADABLE;
 import static com.framgia.music_24.data.model.Track.JsonParamKey.TRACK_DURATION;
 import static com.framgia.music_24.data.model.Track.JsonParamKey.TRACK_FULL_DURATION;
 import static com.framgia.music_24.data.model.Track.JsonParamKey.TRACK_ID;
@@ -28,27 +27,7 @@ public class Track implements Parcelable {
     private String mLastModified;
     private String mTitle;
     private String mDisplayDate;
-    private boolean mDownloadable;
-    private int mDuration;
-    private int mFullDuration;
-    private int mId;
-    private User mUser;
-
-    public Track(TrackBuilder trackBuilder) {
-        mArtworkUrl = trackBuilder.mArtworkUrl;
-        mCreatedAt = trackBuilder.mCreatedAt;
-        mDescription = trackBuilder.mDescription;
-        mDownloadable = trackBuilder.mDownloadable;
-        mDuration = trackBuilder.mDuration;
-        mFullDuration = trackBuilder.mFullDuration;
-        mId = trackBuilder.mId;
-        mLastModified = trackBuilder.mLastModified;
-        mTitle = trackBuilder.mTitle;
-        mDisplayDate = trackBuilder.mDisplayDate;
-        mUser = trackBuilder.mUser;
-    }
-
-    public static final Parcelable.Creator<Track> CREATOR = new Parcelable.Creator<Track>() {
+    public static final Creator<Track> CREATOR = new Creator<Track>() {
         @Override
         public Track createFromParcel(Parcel source) {
             return new Track(source);
@@ -59,6 +38,13 @@ public class Track implements Parcelable {
             return new Track[size];
         }
     };
+    private int mDuration;
+    private int mFullDuration;
+    private int mId;
+    private String mUrl;
+    private int mDownloaded;
+    private User mUser;
+    private int mFavorite;
 
     public Track(JSONObject jsonObject) throws JSONException {
         mArtworkUrl = jsonObject.getString(TRACK_ARTWORK_URL);
@@ -67,25 +53,26 @@ public class Track implements Parcelable {
         mLastModified = jsonObject.getString(TRACK_LAST_MODIFIED);
         mDisplayDate = jsonObject.getString(TRACK_DISPLAY_DATE);
         mTitle = jsonObject.getString(TRACK_TITLE);
-        mDownloadable = jsonObject.getBoolean(TRACK_DOWNLOADABLE);
         mDuration = jsonObject.getInt(TRACK_DURATION);
         mFullDuration = jsonObject.getInt(TRACK_FULL_DURATION);
         mId = jsonObject.getInt(TRACK_ID);
         mUser = new User(jsonObject.getJSONObject(TRACK_USER));
     }
 
-    protected Track(Parcel in) {
-        mArtworkUrl = in.readString();
-        mCreatedAt = in.readString();
-        mDescription = in.readString();
-        mDownloadable = in.readByte() != 0;
-        mDuration = in.readInt();
-        mFullDuration = in.readInt();
-        mId = in.readInt();
-        mLastModified = in.readString();
-        mTitle = in.readString();
-        mDisplayDate = in.readString();
-        mUser = in.readParcelable(User.class.getClassLoader());
+    private Track(TrackBuilder trackBuilder) {
+        mArtworkUrl = trackBuilder.mArtworkUrl;
+        mCreatedAt = trackBuilder.mCreatedAt;
+        mDescription = trackBuilder.mDescription;
+        mLastModified = trackBuilder.mLastModified;
+        mTitle = trackBuilder.mTitle;
+        mDisplayDate = trackBuilder.mDisplayDate;
+        mDuration = trackBuilder.mDuration;
+        mFullDuration = trackBuilder.mFullDuration;
+        mId = trackBuilder.mId;
+        mDownloaded = trackBuilder.mDownloaded;
+        mFavorite = trackBuilder.mFavorite;
+        mUser = trackBuilder.mUser;
+        mUrl = trackBuilder.mUrl;
     }
 
     public String getArtworkUrl() {
@@ -100,8 +87,31 @@ public class Track implements Parcelable {
         return mDescription;
     }
 
-    public boolean getDownloadable() {
-        return mDownloadable;
+    protected Track(Parcel in) {
+        mArtworkUrl = in.readString();
+        mCreatedAt = in.readString();
+        mDescription = in.readString();
+        mLastModified = in.readString();
+        mTitle = in.readString();
+        mDisplayDate = in.readString();
+        mDuration = in.readInt();
+        mFullDuration = in.readInt();
+        mId = in.readInt();
+        mDownloaded = in.readInt();
+        mFavorite = in.readInt();
+        mUser = in.readParcelable(User.class.getClassLoader());
+    }
+
+    public static Creator<Track> getCREATOR() {
+        return CREATOR;
+    }
+
+    public String getLastModified() {
+        return mLastModified;
+    }
+
+    public String getTitle() {
+        return mTitle;
     }
 
     public int getDuration() {
@@ -116,20 +126,46 @@ public class Track implements Parcelable {
         return mId;
     }
 
-    public String getLastModified() {
-        return mLastModified;
-    }
-
-    public String getTitle() {
-        return mTitle;
-    }
-
     public String getDisplayDate() {
         return mDisplayDate;
     }
 
+    public String getUrl() {
+        return mUrl;
+    }
+
     public User getUser() {
         return mUser;
+    }
+
+    public int getDownloaded() {
+        return mDownloaded;
+    }
+
+    public void setDownloaded(int downloaded) {
+        mDownloaded = downloaded;
+    }
+
+    public int getFavorite() {
+        return mFavorite;
+    }
+
+    static class JsonParamKey {
+        //Track
+        static final String TRACK_ARTWORK_URL = "artwork_url";
+        static final String TRACK_CREATED_AT = "created_at";
+        static final String TRACK_DESCRIPTION = "description";
+        static final String TRACK_LAST_MODIFIED = "last_modified";
+        static final String TRACK_DISPLAY_DATE = "display_date";
+        static final String TRACK_TITLE = "title";
+        static final String TRACK_DURATION = "duration";
+        static final String TRACK_FULL_DURATION = "full_duration";
+        static final String TRACK_ID = "id";
+        static final String TRACK_USER = "user";
+    }
+
+    public void setFavorite(int favorite) {
+        mFavorite = favorite;
     }
 
     @Override
@@ -142,13 +178,14 @@ public class Track implements Parcelable {
         dest.writeString(mArtworkUrl);
         dest.writeString(mCreatedAt);
         dest.writeString(mDescription);
-        dest.writeByte(mDownloadable ? (byte) 1 : (byte) 0);
-        dest.writeInt(mDuration);
-        dest.writeInt(mFullDuration);
-        dest.writeInt(mId);
         dest.writeString(mLastModified);
         dest.writeString(mTitle);
         dest.writeString(mDisplayDate);
+        dest.writeInt(mDuration);
+        dest.writeInt(mFullDuration);
+        dest.writeInt(mId);
+        dest.writeInt(mDownloaded);
+        dest.writeInt(mFavorite);
         dest.writeParcelable(mUser, flags);
     }
 
@@ -157,12 +194,14 @@ public class Track implements Parcelable {
         private String mCreatedAt;
         private String mDescription;
         private String mLastModified;
-        private String mDisplayDate;
         private String mTitle;
-        private boolean mDownloadable;
+        private String mDisplayDate;
+        private String mUrl;
         private int mDuration;
         private int mFullDuration;
         private int mId;
+        private int mDownloaded;
+        private int mFavorite;
         private User mUser;
 
         public TrackBuilder() {
@@ -183,8 +222,18 @@ public class Track implements Parcelable {
             return this;
         }
 
-        public TrackBuilder Downloadable(boolean downloadable) {
-            mDownloadable = downloadable;
+        public TrackBuilder LastModified(String lastModified) {
+            mLastModified = lastModified;
+            return this;
+        }
+
+        public TrackBuilder Title(String title) {
+            mTitle = title;
+            return this;
+        }
+
+        public TrackBuilder DisplayDate(String displayDate) {
+            mDisplayDate = displayDate;
             return this;
         }
 
@@ -203,43 +252,28 @@ public class Track implements Parcelable {
             return this;
         }
 
-        public TrackBuilder LastModified(String lastModified) {
-            mLastModified = lastModified;
+        public TrackBuilder Downloaded(int downloaded) {
+            mDownloaded = downloaded;
             return this;
         }
 
-        public TrackBuilder Title(String title) {
-            mTitle = title;
+        public TrackBuilder Favorite(int favorite) {
+            mFavorite = favorite;
             return this;
         }
 
-        public TrackBuilder DisplayDate(String displayDate) {
-            mDisplayDate = displayDate;
+        public TrackBuilder User(User user) {
+            mUser = user;
             return this;
         }
 
-        public TrackBuilder User(User users) {
-            mUser = users;
+        public TrackBuilder Url(String url) {
+            mUrl = url;
             return this;
         }
 
         public Track build() {
             return new Track(this);
         }
-    }
-
-    static class JsonParamKey {
-        //Track
-        static final String TRACK_ARTWORK_URL = "artwork_url";
-        static final String TRACK_CREATED_AT = "created_at";
-        static final String TRACK_DESCRIPTION = "description";
-        static final String TRACK_LAST_MODIFIED = "last_modified";
-        static final String TRACK_DISPLAY_DATE = "display_date";
-        static final String TRACK_TITLE = "title";
-        static final String TRACK_DOWNLOADABLE = "downloadable";
-        static final String TRACK_DURATION = "duration";
-        static final String TRACK_FULL_DURATION = "full_duration";
-        static final String TRACK_ID = "id";
-        static final String TRACK_USER = "user";
     }
 }
