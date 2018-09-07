@@ -51,15 +51,15 @@ public class PlayMusicFragment extends Fragment
         SeekBar.OnSeekBarChangeListener {
 
     public static final String TAG = "PlayMusicFragment";
-    private static final String ARGUMENT_LIST_PLAY = "LIST_TRACKS_PLAYING";
     public static final String EXTRA_TRACK_TITLE = "EXTRA_TRACK_TITLE";
     public static final String EXTRA_TRACK_RECEIVER = "EXTRA_TRACK_RECEIVER";
     public static final String EXTRA_TRACK_URL = "EXTRA_TRACK_URL";
+    public static final int PLAY_FAVORITE = 1;
+    public static final int PLAY_UN_FAVORITE = 0;
+    private static final int PLAY_DOWNLOADED = 1;
     private static final int TIME_UPDATE_SEEKBAR = 1000;
     private static final int TIME_UPDATE_SEEKBAR_LOOP = 300;
-    private static final int PLAY_FAVORITE = 1;
-    private static final int PLAY_UN_FAVORITE = 0;
-    private static final int PLAY_DOWNLOADED = 1;
+    private static final String ARGUMENT_LIST_PLAY = "LIST_TRACKS_PLAYING";
     private FragmentActivity mContext;
     private PlayMusicContract.Presenter mPresenter;
     private ImageView mImageViewPlay;
@@ -175,7 +175,7 @@ public class PlayMusicFragment extends Fragment
                 mMediaListener.setShuffle(mIsShuffle);
                 break;
 
-            case R.id.imageview_favorite:
+            case R.id.imageview_favorite_genre:
                 setFavorite();
                 break;
 
@@ -289,7 +289,7 @@ public class PlayMusicFragment extends Fragment
 
     private void initViews(View view) {
         mImageViewDownload = view.findViewById(R.id.imageview_download);
-        mImageViewFavorite = view.findViewById(R.id.imageview_favorite);
+        mImageViewFavorite = view.findViewById(R.id.imageview_favorite_genre);
         mImageViewShuffle = view.findViewById(R.id.imageview_shuffle);
         mImageViewLoop = view.findViewById(R.id.imageview_loop);
         mImageViewPrevious = view.findViewById(R.id.imageview_previous);
@@ -309,7 +309,7 @@ public class PlayMusicFragment extends Fragment
         mPresenter = new PlayMusicPresenter(
                 PlaySettingRepository.getInstance(PlaySettingLocalDataSource.getInstance(mContext)),
                 TracksRepository.getInstance(TracksRemoteDataSource.getInstance(),
-                        TrackLocalDataSource.getInstance(
+                        TrackLocalDataSource.getInstance(mContext,
                                 TrackDatabaseHelper.getInstance(mContext))));
         setupListener();
         mHandler = new Handler();

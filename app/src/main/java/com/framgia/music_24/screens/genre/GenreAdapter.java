@@ -17,6 +17,8 @@ import com.framgia.music_24.data.model.Track;
 import com.framgia.music_24.utils.StringUtils;
 import java.util.List;
 
+import static com.framgia.music_24.screens.play.PlayMusicFragment.PLAY_FAVORITE;
+
 /**
  * Created by CuD HniM on 18/08/26.
  */
@@ -62,13 +64,19 @@ public class GenreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             genreViewHolder.bindData(mContext, mTracks, mListener);
         } else {
             LoadingViewHolder loadingViewHolder = (LoadingViewHolder) viewHolder;
-            loadingViewHolder.progressBar.setIndeterminate(true);
+            loadingViewHolder.mProgressBar.setIndeterminate(true);
         }
     }
 
     @Override
     public int getItemCount() {
         return mTracks == null ? 0 : mTracks.size();
+    }
+
+    public interface OnClickListener {
+        void OnItemClick(List<Track> tracks, int position);
+
+        void OnFavoriteClick(List<Track> tracks, int position);
     }
 
     static class GenreViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -90,25 +98,36 @@ public class GenreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
         private void initViews(View itemView) {
             mImageViewAva = itemView.findViewById(R.id.imageview_avatar);
-            mImageViewFavorite = itemView.findViewById(R.id.imageview_favorite);
+            mImageViewFavorite = itemView.findViewById(R.id.imageview_favorite_genre);
             mTextViewCreated = itemView.findViewById(R.id.textview_created);
             mTextViewDuration = itemView.findViewById(R.id.textview_time);
             mTextViewName = itemView.findViewById(R.id.textview_name);
             mTextViewSinger = itemView.findViewById(R.id.textview_singer);
             mLayout = itemView.findViewById(R.id.layout_item_genre);
             mLayout.setOnClickListener(this);
+            mImageViewFavorite.setOnClickListener(this);
         }
 
         private void bindData(Context context, List<Track> tracks,
                 OnClickListener OnClickListener) {
             mTracks = tracks;
             mTextViewName.setText(tracks.get(getAdapterPosition()).getTitle());
-            mTextViewSinger.setText(tracks.get(getAdapterPosition()).getUser().getFullName());
-            mTextViewCreated.setText(tracks.get(getAdapterPosition()).getCreatedAt());
+            mTextViewSinger.setText(tracks.get(getAdapterPosition()).getUser().getUsername());
+            mTextViewCreated.setText(
+                    StringUtils.convertTime(tracks.get(getAdapterPosition()).getCreatedAt()));
             mTextViewDuration.setText(StringUtils.convertMilisecToMinute(
                     tracks.get(getAdapterPosition()).getFullDuration()));
             loadImage(context, tracks.get(getAdapterPosition()));
+            loadFavorite(tracks.get(getAdapterPosition()));
             mListener = OnClickListener;
+        }
+
+        private void loadFavorite(Track track) {
+            if (track.getFavorite() == PLAY_FAVORITE) {
+                mImageViewFavorite.setImageResource(R.drawable.ic_favorite);
+            } else {
+                mImageViewFavorite.setImageResource(R.drawable.ic_un_favorite);
+            }
         }
 
         private void loadImage(Context context, Track track) {
@@ -121,21 +140,26 @@ public class GenreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
         @Override
         public void onClick(View view) {
-            mListener.OnItemClick(mTracks, getAdapterPosition());
+            if (mListener != null) {
+                switch (view.getId()) {
+                    case R.id.imageview_favorite_genre:
+                        mListener.OnFavoriteClick(mTracks, getAdapterPosition());
+                        break;
+
+                    default:
+                        mListener.OnItemClick(mTracks, getAdapterPosition());
+                }
+            }
         }
     }
 
     private class LoadingViewHolder extends RecyclerView.ViewHolder {
 
-        private ProgressBar progressBar;
+        private ProgressBar mProgressBar;
 
         private LoadingViewHolder(View itemView) {
             super(itemView);
-            progressBar = itemView.findViewById(R.id.progressBar);
+            mProgressBar = itemView.findViewById(R.id.progressBar);
         }
-    }
-
-    public interface OnClickListener {
-        void OnItemClick(List<Track> tracks, int position);
     }
 }

@@ -68,12 +68,12 @@
         android:layout_marginRight="@dimen/dp_8"
         android:textColor="@color/color_primary_dark"
         android:textSize="@dimen/sp_14"
-        app:layout_constraintBottom_toTopOf="@+id/imageview_favorite"
+        app:layout_constraintBottom_toTopOf="@+id/imageview_favorite_genre"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
     <ImageView
-        android:id="@+id/imageview_favorite"
+        android:id="@+id/imageview_favorite_genre"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/dp_8"

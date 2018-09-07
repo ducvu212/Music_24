@@ -1,10 +1,12 @@
 package com.framgia.music_24.data.source.local;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import com.framgia.music_24.data.model.Track;
 import com.framgia.music_24.data.source.TracksDataSource;
+import com.framgia.music_24.data.source.local.config.shareprefs.SharedPrefsImpl;
 import com.framgia.music_24.data.source.local.config.sqlite.TrackDatabaseHelper;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,17 +37,19 @@ public class TrackLocalDataSource implements TracksDataSource.TrackLocalDataSour
 
     private static TrackLocalDataSource sInstance;
     private TrackDatabaseHelper mHelper;
+    private SharedPrefsImpl mSharedPrefs;
 
-    private TrackLocalDataSource(TrackDatabaseHelper trackDatabaseHelper) {
+    private TrackLocalDataSource(Context context, TrackDatabaseHelper trackDatabaseHelper) {
         mHelper = trackDatabaseHelper;
+        mSharedPrefs = SharedPrefsImpl.getInstance(context);
     }
 
-    public static synchronized TrackLocalDataSource getInstance(
+    public static synchronized TrackLocalDataSource getInstance(Context context,
             TrackDatabaseHelper trackDatabaseHelper) {
         if (sInstance == null) {
             synchronized (PlaySettingLocalDataSource.class) {
                 if (sInstance == null) {
-                    sInstance = new TrackLocalDataSource(trackDatabaseHelper);
+                    sInstance = new TrackLocalDataSource(context, trackDatabaseHelper);
                 }
             }
         }
@@ -74,13 +78,13 @@ public class TrackLocalDataSource implements TracksDataSource.TrackLocalDataSour
         List<Track> tracks = new ArrayList<>();
         SQLiteDatabase db = mHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery(QUERY_ALL_RECODRD, null);
-        tracks.add(createTrack(cursor));
+        tracks.add(createTrack(tracks, cursor));
         cursor.close();
         db.close();
         return tracks;
     }
 
-    private Track createTrack(Cursor cursor) {
+    private Track createTrack(List<Track> tracks, Cursor cursor) {
         Track track = null;
         cursor.moveToFirst();
         if (cursor.getCount() > 0) {
@@ -98,6 +102,9 @@ public class TrackLocalDataSource implements TracksDataSource.TrackLocalDataSour
                         .ArtworkUrl(art)
                         .Favorite(favorite)
                         .build();
+                if (tracks != null) {
+                    tracks.add(track);
+                }
             } while (cursor.moveToNext());
         }
         return track;
@@ -114,7 +121,7 @@ public class TrackLocalDataSource implements TracksDataSource.TrackLocalDataSour
 
     @Override
     public boolean isExistRow(Track track) {
-        Cursor cursor = null;
+        Cursor cursor;
         boolean check;
         SQLiteDatabase db = mHelper.getWritableDatabase();
         String sql = "SELECT * FROM " + DATABASE_TABLE_NAME + " WHERE TRACK_ID=" + track.getId();
@@ -131,11 +138,11 @@ public class TrackLocalDataSource implements TracksDataSource.TrackLocalDataSour
     @Override
     public Track findTrackById(String trackId) {
         Cursor cursor;
-        Track track = null;
+        Track track;
         SQLiteDatabase db = mHelper.getWritableDatabase();
         String sql = "SELECT * FROM " + DATABASE_TABLE_NAME + " WHERE TRACK_ID=" + trackId;
         cursor = db.rawQuery(sql, null);
-        track = createTrack(cursor);
+        track = createTrack(null, cursor);
         cursor.close();
         db.close();
         return track;
