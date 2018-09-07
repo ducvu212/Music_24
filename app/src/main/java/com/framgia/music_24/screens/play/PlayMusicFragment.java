@@ -31,6 +31,8 @@ import com.framgia.music_24.data.source.local.PlaySettingLocalDataSource;
 import com.framgia.music_24.data.source.local.TrackLocalDataSource;
 import com.framgia.music_24.data.source.local.config.sqlite.TrackDatabaseHelper;
 import com.framgia.music_24.data.source.remote.TracksRemoteDataSource;
+import com.framgia.music_24.data.source.remote.download.DownloadReceiver;
+import com.framgia.music_24.data.source.remote.download.DownloadService;
 import com.framgia.music_24.service.MusicService;
 import com.framgia.music_24.service.OnMusicListener;
 import com.framgia.music_24.utils.DisplayUtils;
@@ -50,10 +52,14 @@ public class PlayMusicFragment extends Fragment
 
     public static final String TAG = "PlayMusicFragment";
     private static final String ARGUMENT_LIST_PLAY = "LIST_TRACKS_PLAYING";
+    public static final String EXTRA_TRACK_TITLE = "EXTRA_TRACK_TITLE";
+    public static final String EXTRA_TRACK_RECEIVER = "EXTRA_TRACK_RECEIVER";
+    public static final String EXTRA_TRACK_URL = "EXTRA_TRACK_URL";
     private static final int TIME_UPDATE_SEEKBAR = 1000;
     private static final int TIME_UPDATE_SEEKBAR_LOOP = 300;
     private static final int PLAY_FAVORITE = 1;
     private static final int PLAY_UN_FAVORITE = 0;
+    private static final int PLAY_DOWNLOADED = 1;
     private FragmentActivity mContext;
     private PlayMusicContract.Presenter mPresenter;
     private ImageView mImageViewPlay;
@@ -76,8 +82,8 @@ public class PlayMusicFragment extends Fragment
     private boolean mIsShuffle;
     private Handler mHandler;
     private OnMusicListener mMediaListener;
-    private Runnable mRunnable;
     private MusicService mService;
+    private Runnable mRunnable;
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -124,11 +130,6 @@ public class PlayMusicFragment extends Fragment
         connectService();
     }
 
-    private void connectService() {
-        final Intent intent = new Intent(getContext(), MusicService.class);
-        mContext.getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
@@ -140,6 +141,150 @@ public class PlayMusicFragment extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initViews(view);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        initComponents();
+        getDataFromActivity();
+    }
+
+    @Override
+    public void onClick(View view) {
+
+        switch (view.getId()) {
+            case R.id.imageview_play:
+                mMediaListener.play();
+                break;
+
+            case R.id.imageview_next:
+                mMediaListener.next();
+                break;
+
+            case R.id.imageview_previous:
+                mMediaListener.previous();
+                break;
+
+            case R.id.imageview_loop:
+                setLoop();
+                break;
+
+            case R.id.imageview_shuffle:
+                setShuffle();
+                mMediaListener.setShuffle(mIsShuffle);
+                break;
+
+            case R.id.imageview_favorite:
+                setFavorite();
+                break;
+
+            case R.id.imageview_download:
+                download();
+                break;
+
+            case R.id.frame_play:
+                ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+                break;
+
+            default:
+        }
+    }
+
+    @Override
+    public void initData(Track track) {
+        if (track.getDownloaded() == PLAY_DOWNLOADED) {
+            mImageViewDownload.setImageResource(R.drawable.ic_downloaded);
+        } else {
+            mImageViewDownload.setImageResource(R.drawable.ic_download);
+        }
+        if (track.getFavorite() == PLAY_FAVORITE) {
+            mImageViewFavorite.setImageResource(R.drawable.ic_favorite);
+        } else {
+            mImageViewFavorite.setImageResource(R.drawable.ic_un_favorite);
+        }
+    }
+
+    @Override
+    public void downloadError(String e) {
+        DisplayUtils.makeToast(mContext, e);
+    }
+
+    @Override
+    public void downloadSuccess(String uri) {
+        mCurrentTrack.setDownloaded(PLAY_DOWNLOADED);
+        mPresenter.editDownload(mCurrentTrack, PLAY_DOWNLOADED, uri);
+        updateDownloadButton();
+        DisplayUtils.makeToast(mContext, mContext.getString(R.string.play_complete));
+    }
+
+    @Override
+    public void onStop() {
+        mPresenter.onStop();
+        super.onStop();
+    }
+
+    @Override
+    public void updateStateButton(boolean isPlaying) {
+        if (isPlaying) {
+            mImageViewPlay.setImageResource(R.drawable.ic_pause);
+        } else {
+            mImageViewPlay.setImageResource(R.drawable.ic_play);
+        }
+    }
+
+    @Override
+    public void OnUpdateUiPlay(Track track) {
+        mCurrentTrack = track;
+        mId = mCurrentTrack.getId();
+        showTrackInfo(track);
+        mPresenter.findTrackById(String.valueOf(mId));
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        mSeekbarPosition = progress;
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        mTextViewTimeRunning.setText(StringUtils.convertMilisecToMinute(mSeekbarPosition));
+        mMediaListener.seekTo(mSeekbarPosition);
+    }
+
+    @Override
+    public void OnPlayComplete() {
+        if (mMediaListener != null) {
+            Setting setting = mPresenter.getSetting();
+            mService.checkStatus(setting);
+        }
+    }
+
+    @Override
+    public void OnBuffer(int position) {
+        mSeekBar.setSecondaryProgress(position);
+    }
+
+    private void connectService() {
+        final Intent intent = new Intent(getContext(), MusicService.class);
+        mContext.getApplicationContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    private void updateSeekBar() {
+        mRunnable = new Runnable() {
+            @Override
+            public void run() {
+                long timeRunning = mMediaListener.getCurrentPosition();
+                mSeekBar.setProgress((int) timeRunning);
+                mTextViewTimeRunning.setText(StringUtils.convertMilisecToMinute(timeRunning));
+                mHandler.postDelayed(mRunnable, TIME_UPDATE_SEEKBAR);
+            }
+        };
     }
 
     private void initViews(View view) {
@@ -158,13 +303,6 @@ public class PlayMusicFragment extends Fragment
         mSeekBar = view.findViewById(R.id.seekBar);
         FrameLayout frameLayout = view.findViewById(R.id.frame_play);
         frameLayout.setOnClickListener(this);
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        initComponents();
-        getDataFromActivity();
     }
 
     private void initComponents() {
@@ -262,12 +400,23 @@ public class PlayMusicFragment extends Fragment
         if (getArguments() != null) {
             int position = getArguments().getInt(ARGUMENT_POSITION_ITEM);
             List<Track> tracks = getArguments().getParcelableArrayList(ARGUMENT_LIST_PLAY);
-            mId = tracks.get(position).getId();
+            mCurrentTrack = tracks.get(position);
+            mId = mCurrentTrack.getId();
             if (mPlayer != null) {
                 mPlayer.destroyMedia();
             }
+            addTracks(tracks);
             mPlayer = MusicPlayer.getInstance(getContext(), tracks, position, this);
+            mPresenter.findTrackById(String.valueOf(mId));
             showTrackInfo(tracks.get(position));
+        }
+    }
+
+    private void addTracks(List<Track> tracks) {
+        for (Track track : tracks) {
+            if (!mPresenter.isExistRow(track)) {
+                mPresenter.addTracks(track);
+            }
         }
     }
 
@@ -280,54 +429,11 @@ public class PlayMusicFragment extends Fragment
     }
 
     private void setImageTrack(String url) {
-        if (!mContext.isFinishing()) {
-            Glide.with(mContext)
-                    .load(url)
-                    .apply(new RequestOptions().placeholder(R.drawable.ic_image_place_holder)
-                            .error(R.drawable.ic_load_image_error))
-                    .into(mImageViewTrack);
-        }
-    }
-
-    @Override
-    public void onClick(View view) {
-
-        switch (view.getId()) {
-            case R.id.imageview_play:
-                mMediaListener.play();
-                break;
-
-            case R.id.imageview_next:
-                mMediaListener.next();
-                break;
-
-            case R.id.imageview_previous:
-                mMediaListener.previous();
-                break;
-
-            case R.id.imageview_loop:
-                setLoop();
-                break;
-
-            case R.id.imageview_shuffle:
-                setShuffle();
-                mMediaListener.setShuffle(mIsShuffle);
-                break;
-
-            case R.id.imageview_favorite:
-                setFavorite();
-                break;
-
-            case R.id.imageview_download:
-
-                break;
-
-            case R.id.frame_play:
-                ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
-                break;
-
-            default:
-        }
+        Glide.with(getActivity().getApplicationContext())
+                .load(url)
+                .apply(new RequestOptions().placeholder(R.drawable.ic_image_place_holder)
+                        .error(R.drawable.ic_load_image_error))
+                .into(mImageViewTrack);
     }
 
     private void setFavorite() {
@@ -344,66 +450,20 @@ public class PlayMusicFragment extends Fragment
         }
     }
 
-    private void updateSeekBar() {
-        mRunnable = new Runnable() {
-            @Override
-            public void run() {
-                long timeRunning = mMediaListener.getCurrentPosition();
-                mSeekBar.setProgress((int) timeRunning);
-                mTextViewTimeRunning.setText(StringUtils.convertMilisecToMinute(timeRunning));
-                mHandler.postDelayed(mRunnable, TIME_UPDATE_SEEKBAR);
-            }
-        };
+    private void download() {
+        Intent intent = new Intent(mContext, DownloadService.class);
+        DownloadReceiver receiver = new DownloadReceiver(new Handler());
+        receiver.setContext(mContext);
+        intent.putExtra(EXTRA_TRACK_TITLE, mCurrentTrack.getTitle());
+        intent.putExtra(EXTRA_TRACK_URL, buildStreamUrl(mCurrentTrack.getId()));
+        intent.putExtra(EXTRA_TRACK_RECEIVER, receiver);
+        mPresenter.downloadTrack(mCurrentTrack.getTitle());
+        mContext.startService(intent);
     }
 
-    @Override
-    public void onStop() {
-        mPresenter.onStop();
-        super.onStop();
-    }
-
-    @Override
-    public void updateStateButton(boolean isPlaying) {
-        if (isPlaying) {
-            mImageViewPlay.setImageResource(R.drawable.ic_pause);
-        } else {
-            mImageViewPlay.setImageResource(R.drawable.ic_play);
-        }
-    }
-
-    @Override
-    public void OnUpdateUiPlay(Track track) {
-        mCurrentTrack = track;
-        showTrackInfo(track);
-    }
-
-    @Override
-    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        mSeekbarPosition = progress;
-    }
-
-    @Override
-    public void onStartTrackingTouch(SeekBar seekBar) {
-
-    }
-
-    @Override
-    public void onStopTrackingTouch(SeekBar seekBar) {
-        mTextViewTimeRunning.setText(StringUtils.convertMilisecToMinute(mSeekbarPosition));
-        mMediaListener.seekTo(mSeekbarPosition);
-    }
-
-    @Override
-    public void OnPlayComplete() {
-        if (mMediaListener != null) {
-            Setting setting = mPresenter.getSetting();
-            mService.checkStatus(setting);
-        }
-    }
-
-    @Override
-    public void OnBuffer(int position) {
-        mSeekBar.setSecondaryProgress(position);
+    private void updateDownloadButton() {
+        mCurrentTrack.setDownloaded(PLAY_DOWNLOADED);
+        mImageViewDownload.setImageResource(R.drawable.ic_downloaded);
     }
 
     @Override

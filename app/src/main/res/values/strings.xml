@@ -33,4 +33,9 @@
     <string name="play_shuffle_off">Shuffle Mode Off</string>
     <string name="play_favorite">Add to Favorite</string>
     <string name="play_un_favorite">Un Favorite</string>
+    <string name="play_down_load">Download in progress</string>
+    <string name="play_complete">Download Complete</string>
+    <string name="notify_max_length_name">16</string>
+    <string name="notify_singer">Unknow</string>
+    <string name="notifty_max_line_name">1</string>
 </resources>

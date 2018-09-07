@@ -2,6 +2,7 @@ package com.framgia.music_24.data.repository;
 
 import com.framgia.music_24.data.model.Track;
 import com.framgia.music_24.data.source.CallBack;
+import com.framgia.music_24.data.source.TracksDataSource;
 import com.framgia.music_24.data.source.local.TrackLocalDataSource;
 import com.framgia.music_24.data.source.remote.TracksRemoteDataSource;
 import java.util.List;
@@ -59,5 +60,18 @@ public class TracksRepository {
 
     public boolean isExistRow(Track track) {
         return mLocalDataSource.isExistRow(track);
+    }
+
+    public Track findTrackById(String id) {
+        return mLocalDataSource.findTrackById(id);
+    }
+
+    public void downloadTrack(String title,
+            TracksDataSource.TrackRemoteDataSource.OnDownloadListener onDownloadListener) {
+        mRemoteDataSource.downloadTrack(title, onDownloadListener);
+    }
+
+    public void updateDownload(Track track, int download, String uri) {
+        mLocalDataSource.updateDownload(track, download, uri);
     }
 }

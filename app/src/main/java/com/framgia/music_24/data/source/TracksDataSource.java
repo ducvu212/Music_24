@@ -15,15 +15,13 @@ public interface TracksDataSource {
 
         void getTrack(String genre, int limit, CallBack<List<Track>> callBack);
 
-        void downloadTrack(String url, String title, OnDownloadListener onDownloadListener);
-
         interface OnDownloadListener {
             void OnSuccess(String url);
 
-            void OnError(Exception e);
-
-            void OnDownloaded(int progress);
+            void OnError(String e);
         }
+
+        void downloadTrack(String title, OnDownloadListener onDownloadListener);
     }
 
     interface TrackLocalDataSource {

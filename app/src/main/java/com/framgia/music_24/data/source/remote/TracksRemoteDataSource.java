@@ -4,6 +4,7 @@ import com.framgia.music_24.BuildConfig;
 import com.framgia.music_24.data.source.CallBack;
 import com.framgia.music_24.data.source.TracksDataSource;
 import com.framgia.music_24.data.source.remote.asynctask.TracksAsyncTask;
+import com.framgia.music_24.data.source.remote.download.DownloadReceiver;
 
 import static com.framgia.music_24.BuildConfig.API_KEY;
 import static com.framgia.music_24.utils.Constants.BASE_URL;
@@ -21,7 +22,7 @@ import static com.framgia.music_24.utils.Constants.STREAM_URL;
 /**
  * Created by CuD HniM on 18/08/24.
  */
-public class TracksRemoteDataSource implements TracksDataSource {
+public class TracksRemoteDataSource implements TracksDataSource.TrackRemoteDataSource {
 
     private static TracksRemoteDataSource sInstance;
 
@@ -70,5 +71,11 @@ public class TracksRemoteDataSource implements TracksDataSource {
     @Override
     public void getTrack(String genre, int limit, CallBack callBack) {
         getDataTrackFromUrl(genre, "", String.valueOf(limit), callBack);
+    }
+
+    @Override
+    public void downloadTrack(String title, OnDownloadListener onDownloadListener) {
+        DownloadReceiver receiver = new DownloadReceiver(new android.os.Handler());
+        receiver.setData(title, onDownloadListener);
     }
 }
