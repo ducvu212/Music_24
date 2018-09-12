@@ -42,7 +42,8 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
     private void initComponents() {
         mPresenter = new SplashPresenter(
                 TracksRepository.getInstance(TracksRemoteDataSource.getInstance(),
-                        TrackLocalDataSource.getInstance(TrackDatabaseHelper.getInstance(this))));
+                        TrackLocalDataSource.getInstance(this,
+                                TrackDatabaseHelper.getInstance(this))));
         mPresenter.setView(this);
         getDataGenre();
     }

@@ -23,6 +23,8 @@ public interface GenreContract {
         void hideProgress();
 
         void loadMore(List<Track> tracks);
+
+        void initData(Track track, int position);
     }
 
     /**
@@ -30,6 +32,14 @@ public interface GenreContract {
      */
 
     interface Presenter extends BasePresenter<View> {
-       void loadDataGenre(String genre, String genreTitle, int limit);
+        void loadDataGenre(String genre, String genreTitle, int limit);
+
+        void editFavorite(Track track, int fav);
+
+        void findTrackById(String id, int position);
+
+        void addTracks(Track track);
+
+        boolean isExistRow(Track track);
     }
 }

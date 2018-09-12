@@ -40,7 +40,7 @@ public class GenrePresenter implements GenreContract.Presenter {
                 if (!genreTitle.equals("")) {
                     mView.setupData(datas);
                     mView.hideProgress();
-                }else {
+                } else {
                     mView.loadMore(datas);
                 }
             }
@@ -55,5 +55,25 @@ public class GenrePresenter implements GenreContract.Presenter {
 
             }
         });
+    }
+
+    @Override
+    public void editFavorite(Track track, int fav) {
+        mRepository.updateFavorite(track, fav);
+    }
+
+    @Override
+    public void addTracks(Track track) {
+        mRepository.addTrack(track);
+    }
+
+    @Override
+    public boolean isExistRow(Track track) {
+        return mRepository.isExistRow(track);
+    }
+
+    @Override
+    public void findTrackById(String id, int position) {
+        mView.initData(mRepository.findTrackById(id), position);
     }
 }

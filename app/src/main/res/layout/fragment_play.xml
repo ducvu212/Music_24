@@ -39,7 +39,7 @@
             app:layout_constraintTop_toBottomOf="@+id/imageview_track"/>
 
         <ImageView
-            android:id="@+id/imageview_favorite"
+            android:id="@+id/imageview_favorite_genre"
             android:layout_width="@dimen/dp_32"
             android:layout_height="@dimen/dp_32"
             android:layout_marginLeft="@dimen/dp_8"
@@ -72,7 +72,7 @@
             android:maxLength="@string/length_player"
             android:textSize="@dimen/sp_18"
             app:layout_constraintEnd_toStartOf="@+id/imageview_download"
-            app:layout_constraintStart_toEndOf="@+id/imageview_favorite"
+            app:layout_constraintStart_toEndOf="@+id/imageview_favorite_genre"
             app:layout_constraintTop_toBottomOf="@+id/textview_name_track"/>
 
         <SeekBar
@@ -91,7 +91,7 @@
             android:layout_marginLeft="@dimen/dp_8"
             android:layout_marginTop="@dimen/dp_24"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageview_favorite"/>
+            app:layout_constraintTop_toBottomOf="@+id/imageview_favorite_genre"/>
 
         <TextView
             android:id="@+id/textview_time_total"
