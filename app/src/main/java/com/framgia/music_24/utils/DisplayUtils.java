@@ -5,7 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.widget.Toast;
-import com.framgia.music_24.R;
+import com.framgia.music_24.screens.discover.DiscoverFragment;
 
 /**
  * Created by CuD HniM on 18/08/23.
@@ -26,11 +26,36 @@ public class DisplayUtils {
                     .commit();
         } else {
             transaction.add(id, fragment, tag);
-            if (id != R.id.frame_main_layout) {
-                transaction.addToBackStack(tag);
-            }
+            transaction.addToBackStack(tag);
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
             transaction.commit();
+        }
+        manager.executePendingTransactions();
+    }
+
+    public static void hideFragment(FragmentManager manager, Fragment fragment) {
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.hide(fragment);
+        transaction.commit();
+    }
+
+    public static void replaceFragment(FragmentManager manager, Fragment fragment, int id,
+            String tag) {
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.replace(id, fragment, tag);
+        transaction.addToBackStack(tag);
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        transaction.commit();
+    }
+
+    public static void popFragmentBackstack(FragmentManager manager, String tag) {
+        manager.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+    }
+
+    public static void showFragment(FragmentManager manager, String tag) {
+        Fragment fragment = manager.findFragmentByTag(DiscoverFragment.TAG);
+        if (fragment != null) {
+            manager.beginTransaction().show(fragment).commit();
         }
     }
 }
