@@ -38,4 +38,19 @@
     <string name="notify_max_length_name">16</string>
     <string name="notify_singer">Unknow</string>
     <string name="notifty_max_line_name">1</string>
+    <string name="bottom_notify_max_name">40</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_discover">Discover</string>
+    <string name="title_download">Download</string>
+    <string name="title_favorite">Favorite</string>
+    <string name="title_search">Search</string>
+    <string name="favorite_bias_025">0.25</string>
+    <string name="favorite_bias_075">0.75</string>
+    <string name="navigation_error">Error, please add track</string>
+    <string name="favorite_dialog_title">Remove Favorite</string>
+    <string name="favorite_dialog_messsage">Bạn có muốn xoá không?</string>
+    <string name="favorite_dialog_possitive">OK</string>
+    <string name="favorite_dialog_negative">NO</string>
+    <string name="favorite_favorite_remove">Xoá thành công</string>
+    <string name="download_start">Downloading</string>
 </resources>

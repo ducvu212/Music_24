@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/white"
     android:fitsSystemWindows="true"
+    android:clickable="true"
     tools:context=".screens.genre.GenreFragment">
 
     <android.support.v7.widget.RecyclerView
@@ -30,5 +31,4 @@
         app:layout_constraintHorizontal_bias="@string/bias_avatar_navigation"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
-
 </FrameLayout>
