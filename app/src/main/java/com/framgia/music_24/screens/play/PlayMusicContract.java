@@ -1,5 +1,6 @@
 package com.framgia.music_24.screens.play;
 
+import android.graphics.Bitmap;
 import com.framgia.music_24.data.model.Setting;
 import com.framgia.music_24.data.model.Track;
 import com.framgia.music_24.screens.base.BasePresenter;
@@ -16,9 +17,11 @@ public interface PlayMusicContract {
     interface View {
         void initData(Track track);
 
+        void downloadError(String error);
+
         void downloadSuccess(String url);
 
-        void downloadError(String e);
+        void convertSuccess(Bitmap bitmap);
     }
 
     /**
@@ -41,5 +44,7 @@ public interface PlayMusicContract {
         void downloadTrack(String title);
 
         void findTrackById(String id);
+
+        void convertBitmap(String url);
     }
 }

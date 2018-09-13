@@ -5,7 +5,7 @@ package com.framgia.music_24.service;
  */
 public interface OnMusicListener {
 
-    void setDataSource(String url);
+    void setDataSource(String url, boolean isOff);
 
     void play();
 

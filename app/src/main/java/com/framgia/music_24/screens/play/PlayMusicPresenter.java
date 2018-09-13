@@ -1,5 +1,6 @@
 package com.framgia.music_24.screens.play;
 
+import android.graphics.Bitmap;
 import com.framgia.music_24.data.model.Setting;
 import com.framgia.music_24.data.model.Track;
 import com.framgia.music_24.data.repository.PlaySettingRepository;
@@ -61,6 +62,16 @@ public class PlayMusicPresenter implements PlayMusicContract.Presenter {
     }
 
     @Override
+    public void findTrackById(String id) {
+        mView.initData(mTracksRepository.findTrackById(id));
+    }
+
+    @Override
+    public void editDownload(Track track, int download, String uri) {
+        mTracksRepository.updateDownload(track, download, uri);
+    }
+
+    @Override
     public void downloadTrack(String title) {
         mTracksRepository.downloadTrack(title,
                 new TracksDataSource.TrackRemoteDataSource.OnDownloadListener() {
@@ -77,12 +88,19 @@ public class PlayMusicPresenter implements PlayMusicContract.Presenter {
     }
 
     @Override
-    public void findTrackById(String id) {
-        mView.initData(mTracksRepository.findTrackById(id));
-    }
+    public void convertBitmap(String url) {
+        mTracksRepository.convertBitmap(url,
+                new TracksDataSource.TrackRemoteDataSource.OnConvertBitmapListener() {
+                    @Override
+                    public void OnSuccess(Bitmap bitmap) {
+                        mView.convertSuccess(bitmap);
+                    }
 
-    @Override
-    public void editDownload(Track track, int download, String uri) {
-        mTracksRepository.updateDownload(track, download, uri);
+                    @Override
+                    public void OnError(Exception e) {
+                        mView.downloadError(e.getMessage());
+                        mView.convertSuccess(null);
+                    }
+                });
     }
 }

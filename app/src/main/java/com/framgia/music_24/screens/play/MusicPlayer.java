@@ -13,6 +13,7 @@ import java.util.Random;
 import java.util.Set;
 
 import static com.framgia.music_24.data.source.remote.TracksRemoteDataSource.buildStreamUrl;
+import static com.framgia.music_24.screens.genre.GenreFragment.NUMBER_ONE;
 
 /**
  * Created by CuD HniM on 18/08/29.
@@ -22,7 +23,8 @@ public class MusicPlayer
         MediaPlayer.OnCompletionListener {
 
     private static final float MAX_VOLUME_INDEX = 1.0f;
-    private static MusicPlayer sInstance;
+    private static final String NOTIFY_NAME_UNKNOW_SINGER = "Unknown";
+    private String mUrl;
     private MediaPlayer mMediaPlayer;
     private Context mContext;
     private List<Track> mTracks;
@@ -30,10 +32,10 @@ public class MusicPlayer
     private int mPosition;
     private boolean mIsLoopOne;
     private boolean mIsLoopAll;
+    private boolean mIsOff;
     private OnUpdateUiListener mMediaState;
 
-    private MusicPlayer(Context context, List<Track> tracks, int position,
-            OnUpdateUiListener onListener) {
+    MusicPlayer(Context context, List<Track> tracks, int position, OnUpdateUiListener onListener) {
         mContext = context;
         mUnShuffleTracks = new ArrayList<>();
         mTracks = new ArrayList<>();
@@ -43,27 +45,25 @@ public class MusicPlayer
         mMediaState = onListener;
     }
 
-    public static synchronized MusicPlayer getInstance(Context context, List<Track> tracks,
-            int position, OnUpdateUiListener listener) {
-        if (sInstance == null) {
-            synchronized (MusicPlayer.class) {
-                if (sInstance == null) {
-                    sInstance = new MusicPlayer(context, tracks, position, listener);
-                }
-            }
-        }
-        return sInstance;
-    }
-
-    public void setDataSource(String url) {
+    public void setDataSource(String url, boolean isOff) {
+        mIsOff = isOff;
+        mUrl = url;
         try {
+            if (mMediaPlayer != null) {
+                destroyMedia();
+            }
             mMediaPlayer = new MediaPlayer();
             mMediaPlayer.setDataSource(mContext, Uri.parse(url));
-            mMediaPlayer.prepareAsync();
+            mMediaPlayer.setOnCompletionListener(this);
+            if (isOff) {
+                mMediaPlayer.prepare();
+            } else {
+                mMediaPlayer.prepareAsync();
+            }
+            mMediaPlayer.setOnPreparedListener(this);
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.setVolume(MAX_VOLUME_INDEX, MAX_VOLUME_INDEX);
-            mMediaPlayer.setOnPreparedListener(this);
-            mMediaPlayer.setOnCompletionListener(this);
+            mMediaState.updateStateButton(true);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -90,17 +90,14 @@ public class MusicPlayer
 
     public void next() {
         destroyMedia();
-        if (mIsLoopOne) {
-            return;
-        }
         if (mIsLoopAll) {
-            if (mPosition == mTracks.size() - 1) {
+            if (mPosition == mTracks.size() - NUMBER_ONE) {
                 mPosition = 0;
             } else {
                 mPosition++;
             }
         } else {
-            if (mPosition == mTracks.size() - 1) {
+            if (mPosition == mTracks.size() - NUMBER_ONE) {
                 return;
             } else {
                 mPosition++;
@@ -110,8 +107,28 @@ public class MusicPlayer
     }
 
     private void updateUiState(Track track) {
-        setDataSource(buildStreamUrl(track.getId()));
+        if (!track.isOffline()) {
+            setDataSource(buildStreamUrl(track.getId()), mIsOff);
+        } else {
+            setDataSource(track.getDownloadUri(), mIsOff);
+        }
         mMediaState.OnUpdateUiPlay(track);
+    }
+
+    public List<Track> getTracks() {
+        return mTracks;
+    }
+
+    public int getPosition() {
+        return mPosition;
+    }
+
+    public Track getCurrentTrack() {
+        return mTracks.get(mPosition);
+    }
+
+    public String getTrackUrl() {
+        return mTracks.get(mPosition).getArtworkUrl();
     }
 
     public void destroyMedia() {
@@ -120,6 +137,8 @@ public class MusicPlayer
             mMediaPlayer.reset();
             mMediaPlayer.release();
             mMediaPlayer = null;
+            mMediaPlayer = new MediaPlayer();
+            mMediaState.updateStateButton(false);
         }
     }
 
@@ -185,6 +204,14 @@ public class MusicPlayer
         mPosition = mTracks.indexOf(mTracks.get(mPosition));
     }
 
+    public boolean isPlaying() {
+        return mMediaPlayer != null && mMediaPlayer.isPlaying();
+    }
+
+    public String getNameTrack() {
+        return mTracks.get(mPosition).getTitle();
+    }
+
     @Override
     public void onBufferingUpdate(MediaPlayer mediaPlayer, int i) {
         mMediaState.OnBuffer(i);
@@ -193,6 +220,10 @@ public class MusicPlayer
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
         mMediaState.OnPlayComplete();
-        next();
+        if (mIsLoopOne) {
+            setDataSource(mUrl, mIsOff);
+        } else {
+            next();
+        }
     }
 }
