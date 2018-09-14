@@ -37,6 +37,11 @@
             android:layout_height="match_parent"
             android:layout_marginTop="?attr/actionBarSize"/>
 
+        <include
+            layout="@layout/layout_bottom_controller"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
     </android.support.design.widget.CoordinatorLayout>
 
     <android.support.design.widget.NavigationView
@@ -47,5 +52,4 @@
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_main"
         app:menu="@menu/activity_main_drawer"/>
-
 </android.support.v4.widget.DrawerLayout>
