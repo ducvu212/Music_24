@@ -50,7 +50,6 @@ import java.util.List;
 
 import static com.framgia.music_24.data.source.remote.TracksRemoteDataSource.buildStreamUrl;
 import static com.framgia.music_24.screens.discover.DiscoverFragment.ARGUMENT_POSITION_ITEM;
-import static com.framgia.music_24.screens.genre.GenreFragment.NUMBER_ONE;
 import static com.framgia.music_24.screens.main.MainActivity.getTrackIntent;
 
 /**
@@ -70,15 +69,15 @@ public class PlayMusicFragment extends Fragment
     private static final int TIME_UPDATE_SEEKBAR = 1000;
     private static final int TIME_UPDATE_SEEKBAR_LOOP = 300;
     private static final String ARGUMENT_LIST_PLAY = "LIST_TRACKS_PLAYING";
-    public static final String ACTION_UPDATE_BUTTON = "ACTION_UPDATE_BUTTON";
-    public static final String EXTRA_UPDATE_BUTTON = "EXTRA_UPDATE_BUTTON";
-    public static final String EXTRA_POSSITION = "EXTRA_POSSITION";
     private static final String ARGUMENT_TYPE = "ARGUMENT_TYPE";
     private static final String ARGUMENT_MAIN = "ARGUMENT_MAIN";
+    public static final String ACTION_UPDATE_BUTTON = "ACTION_UPDATE_BUTTON";
+    public static final String EXTRA_UPDATE_BUTTON = "EXTRA_UPDATE_BUTTON";
     private static final String ARGUMENT_SHUFFLE = "ARGUMENT_SHUFFLE";
+    public static final String EXTRA_POSSITION = "EXTRA_POSSITION";
     private static final String ACTION_FAVORITE = "ACTION_FAVORITE";
-    public static Bitmap sBitmapTrack;
     private static MusicService sService;
+    public static Bitmap sBitmapTrack;
     private static PlayMusicFragment sInstance;
     private FragmentActivity mContext;
     private PlayMusicContract.Presenter mPresenter;
@@ -145,23 +144,6 @@ public class PlayMusicFragment extends Fragment
         }
     };
 
-    public static PlayMusicFragment newInstance(List<Track> tracks, String type, int position,
-            boolean isMain, boolean isShuffle) {
-        Bundle bundle = new Bundle();
-        bundle.putInt(ARGUMENT_POSITION_ITEM, position);
-        bundle.putString(ARGUMENT_TYPE, type);
-        bundle.putBoolean(ARGUMENT_MAIN, isMain);
-        bundle.putBoolean(ARGUMENT_SHUFFLE, isShuffle);
-        bundle.putParcelableArrayList(ARGUMENT_LIST_PLAY, (ArrayList<? extends Parcelable>) tracks);
-        sInstance = new PlayMusicFragment();
-        sInstance.setArguments(bundle);
-        return sInstance;
-    }
-
-    public PlayMusicFragment() {
-        // Required empty public constructor
-    }
-
     private void setNotification() {
         if (mCurrentTrack.getBitmap() == null) {
             Bitmap bitmap =
@@ -174,6 +156,23 @@ public class PlayMusicFragment extends Fragment
         }
         sService.createNotification(mCurrentTrack.getTitle(), mCurrentTrack.getUser().getUsername(),
                 mCurrentTrack.getBitmap());
+    }
+
+    public PlayMusicFragment() {
+        // Required empty public constructor
+    }
+
+    public static PlayMusicFragment newInstance(List<Track> tracks, String type, int position,
+            boolean isMain, boolean isShuffle) {
+        Bundle bundle = new Bundle();
+        bundle.putInt(ARGUMENT_POSITION_ITEM, position);
+        bundle.putString(ARGUMENT_TYPE, type);
+        bundle.putBoolean(ARGUMENT_MAIN, isMain);
+        bundle.putBoolean(ARGUMENT_SHUFFLE, isShuffle);
+        bundle.putParcelableArrayList(ARGUMENT_LIST_PLAY, (ArrayList<? extends Parcelable>) tracks);
+        sInstance = new PlayMusicFragment();
+        sInstance.setArguments(bundle);
+        return sInstance;
     }
 
     @Override
@@ -283,12 +282,14 @@ public class PlayMusicFragment extends Fragment
 
     private void setAction(int i) {
         List<Fragment> fragments = mContext.getSupportFragmentManager().getFragments();
-        if (fragments.get(i - NUMBER_ONE).getTag() != null) {
-            if (fragments.get(i - NUMBER_ONE).getTag().equals(DiscoverFragment.TAG)) {
+        if (fragments.get(i - 1).getTag() != null) {
+            if (fragments.get(i - 1).getTag().equals(DiscoverFragment.TAG)) {
                 ((AppCompatActivity) mContext).getSupportActionBar().show();
             }
-            if (fragments.get(i - NUMBER_ONE).getTag().equals(TrackOfflineFragment.TAG)) {
-                ((AppCompatActivity) mContext).getSupportActionBar().show();
+            if (fragments.get(i - 1).getTag().equals(TrackOfflineFragment.TAG)) {
+                {
+                    ((AppCompatActivity) mContext).getSupportActionBar().show();
+                }
             }
         }
     }
@@ -453,8 +454,11 @@ public class PlayMusicFragment extends Fragment
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_BACK) {
-                    DisplayUtils.showFragment(mContext.getSupportFragmentManager(),
-                            DiscoverFragment.TAG);
+                    mContext.getSupportFragmentManager().beginTransaction().hide(sInstance).commit();
+                    mContext.getSupportFragmentManager()
+                            .beginTransaction()
+                            .show(mContext.getSupportFragmentManager().findFragmentByTag(DiscoverFragment.TAG))
+                            .commit();
                     ((AppCompatActivity) mContext).getSupportActionBar().show();
                 }
                 return true;
@@ -604,7 +608,7 @@ public class PlayMusicFragment extends Fragment
                     StringUtils.convertMilisecToMinute(mCurrentTrack.getDuration()));
             mSeekBar.setMax(mCurrentTrack.getDuration());
         }
-        if (track.getDownloaded() == NUMBER_ONE) {
+        if (track.getDownloaded() == 1) {
             mImageViewDownload.setClickable(false);
         }
     }
@@ -613,7 +617,7 @@ public class PlayMusicFragment extends Fragment
         Glide.with(SoundCloudApplication.getInstance())
                 .load(url)
                 .apply(new RequestOptions().placeholder(R.drawable.ic_image_place_holder)
-                        .error(R.drawable.ic_load_image_error))
+                        .error(R.drawable.ic_load_image_error).dontTransform())
                 .into(mImageViewTrack);
     }
 
@@ -632,7 +636,7 @@ public class PlayMusicFragment extends Fragment
     }
 
     private void download() {
-        if (mCurrentTrack.getDownloaded() != NUMBER_ONE) {
+        if(mCurrentTrack.getDownloaded() != 1) {
             DisplayUtils.makeToast(mContext, getString(R.string.download_start));
             Intent intent = new Intent(mContext, DownloadService.class);
             DownloadReceiver receiver = new DownloadReceiver(new Handler());
@@ -672,7 +676,7 @@ public class PlayMusicFragment extends Fragment
                 PlayingListFragment.TAG);
     }
 
-    private Intent sendFavoritePlaylist(int position) {
+    private Intent sendFavoritePlaylist(int position){
         Intent intent = new Intent();
         intent.putExtra(EXTRA_POSSITION, position);
         intent.setAction(ACTION_FAVORITE);

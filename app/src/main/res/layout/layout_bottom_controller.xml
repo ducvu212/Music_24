@@ -40,11 +40,11 @@
             android:layout_marginLeft="@dimen/dp_8"
             android:ellipsize="end"
             android:gravity="center"
-            android:maxLength="@string/bottom_notify_max_name"
             android:maxLines="@string/notifty_max_line_name"
             android:paddingBottom="@dimen/dp_4"
             android:textColor="@android:color/white"
             android:textSize="@dimen/sp_14"
+            android:maxLength="@string/bottom_notify_max_name"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -55,7 +55,7 @@
             android:id="@+id/imageview_bottom_previous"
             android:layout_width="@dimen/dp_32"
             android:layout_height="@dimen/dp_32"
-            android:layout_marginBottom="@dimen/dp_8"
+            android:layout_marginBottom="8dp"
             android:layout_marginLeft="@dimen/dp_32"
             android:layout_marginTop="@dimen/dp_24"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -67,7 +67,7 @@
             android:id="@+id/imageview_bottom_play"
             android:layout_width="@dimen/dp_32"
             android:layout_height="@dimen/dp_32"
-            android:layout_marginBottom="@dimen/dp_8"
+            android:layout_marginBottom="8dp"
             android:layout_marginTop="@dimen/dp_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/imageview_bottom_next"
@@ -79,7 +79,7 @@
             android:id="@+id/imageview_bottom_next"
             android:layout_width="@dimen/dp_32"
             android:layout_height="@dimen/dp_32"
-            android:layout_marginBottom="@dimen/dp_8"
+            android:layout_marginBottom="8dp"
             android:layout_marginRight="@dimen/dp_32"
             android:layout_marginTop="@dimen/dp_24"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -87,4 +87,5 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_next"/>
     </android.support.constraint.ConstraintLayout>
+
 </android.support.v4.widget.NestedScrollView>

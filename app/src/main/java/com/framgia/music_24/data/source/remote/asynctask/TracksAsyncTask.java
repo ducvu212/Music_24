@@ -20,10 +20,12 @@ public class TracksAsyncTask extends AsyncTask<String, Void, List<Track>> {
     private CallBack mCallBack;
     private Exception mException;
     private String mGenreTitle;
+    private String mType;
     private List<Object> mDataList;
 
-    public TracksAsyncTask(String genreTitle, CallBack callBack) {
+    public TracksAsyncTask(String genreTitle, String type, CallBack callBack) {
         mGenreTitle = genreTitle;
+        mType = type;
         mDataList = new ArrayList<>();
         mCallBack = callBack;
     }
@@ -51,7 +53,10 @@ public class TracksAsyncTask extends AsyncTask<String, Void, List<Track>> {
             if (mGenreTitle.equals("")) {
                 mCallBack.onSuccess(tracks);
             } else {
-                mDataList.add(new Discover.Builder().mGender(mGenreTitle).mTracks(tracks).build());
+                mDataList.add(new Discover.Builder().mGender(mGenreTitle)
+                        .mType(mType)
+                        .mTracks(tracks)
+                        .build());
                 mCallBack.onSuccess(mDataList);
             }
         } else {

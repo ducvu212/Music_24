@@ -13,7 +13,6 @@ import java.util.Random;
 import java.util.Set;
 
 import static com.framgia.music_24.data.source.remote.TracksRemoteDataSource.buildStreamUrl;
-import static com.framgia.music_24.screens.genre.GenreFragment.NUMBER_ONE;
 
 /**
  * Created by CuD HniM on 18/08/29.
@@ -91,13 +90,13 @@ public class MusicPlayer
     public void next() {
         destroyMedia();
         if (mIsLoopAll) {
-            if (mPosition == mTracks.size() - NUMBER_ONE) {
+            if (mPosition == mTracks.size() - 1) {
                 mPosition = 0;
             } else {
                 mPosition++;
             }
         } else {
-            if (mPosition == mTracks.size() - NUMBER_ONE) {
+            if (mPosition == mTracks.size() - 1) {
                 return;
             } else {
                 mPosition++;
@@ -213,6 +212,7 @@ public class MusicPlayer
     }
 
     @Override
+
     public void onBufferingUpdate(MediaPlayer mediaPlayer, int i) {
         mMediaState.OnBuffer(i);
     }

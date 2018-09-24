@@ -65,7 +65,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.Discov
             mRecyclerGender = itemView.findViewById(R.id.recycler_gender);
         }
 
-        public void bindData(Context context, Discover discover, OnClickListener OnClickListener) {
+        void bindData(Context context, Discover discover, OnClickListener OnClickListener) {
             mTextViewGender.setText(discover.getGender());
             mGenre = discover.getGender();
             mTextViewGender.setOnClickListener(this);
@@ -75,7 +75,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.Discov
 
         private void initRecycleGenders(Context context, Discover discover) {
             List<Track> tracks = discover.getTracks();
-            TrackAdapter adapter = new TrackAdapter(context, tracks, mTrackClickListener);
+            TrackAdapter adapter = new TrackAdapter(context, tracks, discover.getType(), mTrackClickListener);
             mRecyclerGender.setHasFixedSize(true);
             mRecyclerGender.setLayoutManager(
                     new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));

@@ -5,7 +5,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.widget.Toast;
-import com.framgia.music_24.screens.discover.DiscoverFragment;
 
 /**
  * Created by CuD HniM on 18/08/23.
@@ -39,8 +38,7 @@ public class DisplayUtils {
         transaction.commit();
     }
 
-    public static void replaceFragment(FragmentManager manager, Fragment fragment, int id,
-            String tag) {
+    public static void replaceFragment(FragmentManager manager, Fragment fragment, int id, String tag) {
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.replace(id, fragment, tag);
         transaction.addToBackStack(tag);
@@ -50,12 +48,5 @@ public class DisplayUtils {
 
     public static void popFragmentBackstack(FragmentManager manager, String tag) {
         manager.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-    }
-
-    public static void showFragment(FragmentManager manager, String tag) {
-        Fragment fragment = manager.findFragmentByTag(DiscoverFragment.TAG);
-        if (fragment != null) {
-            manager.beginTransaction().show(fragment).commit();
-        }
     }
 }

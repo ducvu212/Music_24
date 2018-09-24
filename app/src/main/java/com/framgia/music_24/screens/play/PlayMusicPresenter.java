@@ -86,7 +86,7 @@ public class PlayMusicPresenter implements PlayMusicContract.Presenter {
                     }
                 });
     }
-
+    
     @Override
     public void convertBitmap(String url) {
         mTracksRepository.convertBitmap(url,
@@ -98,7 +98,7 @@ public class PlayMusicPresenter implements PlayMusicContract.Presenter {
 
                     @Override
                     public void OnError(Exception e) {
-                        mView.downloadError(e.getMessage());
+                        mView.downloadError(e.toString());
                         mView.convertSuccess(null);
                     }
                 });

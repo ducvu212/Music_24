@@ -40,7 +40,8 @@
         <include
             layout="@layout/layout_bottom_controller"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            app:layout_behavior="android.support.design.widget.BottomSheetBehavior"/>
 
     </android.support.design.widget.CoordinatorLayout>
 
@@ -52,4 +53,5 @@
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_main"
         app:menu="@menu/activity_main_drawer"/>
+
 </android.support.v4.widget.DrawerLayout>

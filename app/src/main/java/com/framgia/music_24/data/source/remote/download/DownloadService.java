@@ -31,6 +31,7 @@ public class DownloadService extends IntentService {
     private static final int NOTIFY_UPDATE = 10;
     private String mPathFile;
     private HttpURLConnection mConnection;
+    private String mDirectPath;
 
     public DownloadService() {
         super(DownloadService.class.getSimpleName());
@@ -64,7 +65,7 @@ public class DownloadService extends IntentService {
             mConnection.connect();
             if (mConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 input = mConnection.getInputStream();
-                output = new FileOutputStream(mPathFile);
+                output = new FileOutputStream(mDirectPath);
                 downloadFile(resultData, receiver, input, output);
             }
         } catch (Exception e) {
@@ -83,7 +84,7 @@ public class DownloadService extends IntentService {
                 .append(SOUND_CLOUD_DIRECTORY)
                 .append(mTitle)
                 .append(SOUND_CLOUD_FILE_EXTENSION);
-        String filePath = builder.toString();
+        mDirectPath = builder.toString();
         File dir = new File(SOUND_CLOUD_PATH_DOWNLOAD);
         File cacheDir = new File(PATH_DOWNLOAD);
         if (!cacheDir.isDirectory()) {
@@ -92,9 +93,11 @@ public class DownloadService extends IntentService {
         if (!dir.isDirectory()) {
             dir.mkdirs();
         }
-        File file = new File(filePath);
+        File file = new File(mDirectPath);
         if (file.exists()) {
             mPathFile = file.getPath();
+        } else{
+            mPathFile = mDirectPath;
         }
         if (!cacheDownloadFile.exists()) {
             try {

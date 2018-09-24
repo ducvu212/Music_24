@@ -52,12 +52,24 @@ public class UrlDataParser {
     }
 
     public static List<Track> parseJsonTrack(String json) throws JSONException {
-        ArrayList<Track> tracks = new ArrayList<>();
+        List<Track> tracks = new ArrayList<>();
         JSONObject jsonRoot = new JSONObject(json);
         JSONArray jsonCollection = jsonRoot.getJSONArray(PARSE_JSON_COLLECTION);
         for (int i = 0; i < jsonCollection.length(); i++) {
             Track track =
                     new Track(jsonCollection.getJSONObject(i).getJSONObject(PARSE_JSON_TRACK));
+            tracks.add(track);
+        }
+        return tracks;
+    }
+
+    public static List<Track> parseJsonTrackSearch(String json) throws JSONException {
+        ArrayList<Track> tracks = new ArrayList<>();
+        JSONObject jsonRoot = new JSONObject(json);
+        JSONArray jsonCollection = jsonRoot.getJSONArray(PARSE_JSON_COLLECTION);
+        for (int i = 0; i < jsonCollection.length(); i++) {
+            Track track =
+                    new Track(jsonCollection.getJSONObject(i));
             tracks.add(track);
         }
         return tracks;

@@ -29,14 +29,11 @@ public final class StringUtils {
     public static String convertTime(String time) {
         StringBuilder builder = new StringBuilder();
         String timeConvert;
-        String timeCharacter = "T";
-        String dash = "-";
-        timeConvert = time.substring(0, time.indexOf(timeCharacter));
-        String date =
-                timeConvert.substring(timeConvert.lastIndexOf(dash) + 1, timeConvert.length());
+        timeConvert = time.substring(0, time.indexOf("T"));
+        String date = timeConvert.substring(timeConvert.lastIndexOf("-") + 1, timeConvert.length());
         String month =
-                timeConvert.substring(timeConvert.indexOf(dash), timeConvert.lastIndexOf(dash) + 1);
-        String year = timeConvert.substring(0, timeConvert.indexOf(dash));
+                timeConvert.substring(timeConvert.indexOf("-"), timeConvert.lastIndexOf("-") + 1);
+        String year = timeConvert.substring(0, timeConvert.indexOf("-"));
         builder.append(date).append(month).append(year);
         return builder.toString();
     }

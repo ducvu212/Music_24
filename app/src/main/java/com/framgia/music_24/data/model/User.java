@@ -56,7 +56,7 @@ public class User implements Parcelable {
         mCity = userBuilder.mCity;
     }
 
-    public User(JSONObject jsonObject) throws JSONException {
+    User(JSONObject jsonObject) throws JSONException {
         mAvatarUrl = jsonObject.getString(USER_AVATAR_URL);
         mFirstName = jsonObject.getString(USER_FIRST_NAME);
         mFullName = jsonObject.getString(USER_FULL_NAME);
@@ -69,7 +69,7 @@ public class User implements Parcelable {
         mId = jsonObject.getInt(USER_ID);
     }
 
-    protected User(Parcel in) {
+    private User(Parcel in) {
         mAvatarUrl = in.readString();
         mFirstName = in.readString();
         mFullName = in.readString();
@@ -80,6 +80,10 @@ public class User implements Parcelable {
         mPermalinkUrl = in.readString();
         mUsername = in.readString();
         mCity = in.readString();
+    }
+
+    public void setUsername(String username) {
+        mUsername = username;
     }
 
     public String getAvatarUrl() {

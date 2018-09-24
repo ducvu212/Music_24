@@ -14,7 +14,11 @@ import com.framgia.music_24.utils.DisplayUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.framgia.music_24.screens.genre.GenreFragment.mGenres;
 import static com.framgia.music_24.screens.main.MainActivity.getProfileIntent;
+import static com.framgia.music_24.service.MusicService.EXTRA_ART_URL;
+import static com.framgia.music_24.service.MusicService.EXTRA_NAME_TRACK;
+import static com.framgia.music_24.service.MusicService.EXTRA_NOTIFY_INTENT;
 import static com.framgia.music_24.utils.Constants.ARROW;
 import static com.framgia.music_24.utils.Constants.QUERY_GENRE_ALL_AUDIO;
 import static com.framgia.music_24.utils.Constants.QUERY_GENRE_ALL_MUSIC;
@@ -27,6 +31,9 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
 
     public static final String EXTRA_GENRE = "com.framgia.music_24.extras.EXTRA_GENRE";
     private SplashContract.Presenter mPresenter;
+    private boolean mIsNotify;
+    private String mArtUrl;
+    private String mNameTrack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +43,9 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
                     ContextCompat.getColor(this, R.color.color_deep_orange_accent_400));
         }
         setContentView(R.layout.activity_splash);
+        mIsNotify = getIntent().getBooleanExtra(EXTRA_NOTIFY_INTENT, false);
+        mArtUrl = getIntent().getStringExtra(EXTRA_ART_URL);
+        mNameTrack = getIntent().getStringExtra(EXTRA_NAME_TRACK);
         initComponents();
     }
 
@@ -51,17 +61,17 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
     private void getDataGenre() {
         List<Discover> discovers = new ArrayList<>();
         mPresenter.loadDataGenre(QUERY_GENRE_ALL_MUSIC,
-                getString(R.string.discover_all_music).concat(ARROW), discovers);
+                getString(R.string.discover_all_music).concat(ARROW), mGenres[0], discovers);
         mPresenter.loadDataGenre(QUERY_GENRE_ALL_AUDIO,
-                getString(R.string.discover_all_audio).concat(ARROW), discovers);
+                getString(R.string.discover_all_audio).concat(ARROW), mGenres[1], discovers);
         mPresenter.loadDataGenre(QUERY_GENRE_ALTERNATIVE_ROCK,
-                getString(R.string.discover_alternative_rock).concat(ARROW), discovers);
+                getString(R.string.discover_alternative_rock).concat(ARROW), mGenres[2], discovers);
         mPresenter.loadDataGenre(QUERY_GENRE_AMBIENT,
-                getString(R.string.discover_ambient).concat(ARROW), discovers);
+                getString(R.string.discover_ambient).concat(ARROW), mGenres[3], discovers);
         mPresenter.loadDataGenre(QUERY_GENRE_CLASSICAL,
-                getString(R.string.discover_classical).concat(ARROW), discovers);
+                getString(R.string.discover_classical).concat(ARROW), mGenres[4], discovers);
         mPresenter.loadDataGenre(QUERY_GENRE_COUNTRY,
-                getString(R.string.discover_country).concat(ARROW), discovers);
+                getString(R.string.discover_country).concat(ARROW), mGenres[5], discovers);
     }
 
     @Override
@@ -78,7 +88,7 @@ public class SplashActivity extends AppCompatActivity implements SplashContract.
 
     @Override
     public void sendGenreData(List<Discover> discovers) {
-        startActivity(getProfileIntent(this, discovers));
+        startActivity(getProfileIntent(this, discovers, mIsNotify, mArtUrl, mNameTrack));
         finish();
     }
 

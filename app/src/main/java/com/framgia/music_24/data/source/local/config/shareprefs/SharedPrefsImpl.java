@@ -27,6 +27,7 @@ public class SharedPrefsImpl implements SharedPrefsApi {
         return mInstance;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T get(String key, Class<T> clazz) {
         if (clazz == String.class) {

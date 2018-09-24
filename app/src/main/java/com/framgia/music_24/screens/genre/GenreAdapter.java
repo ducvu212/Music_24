@@ -140,15 +140,13 @@ public class GenreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
         @Override
         public void onClick(View view) {
-            if (mListener != null) {
-                switch (view.getId()) {
-                    case R.id.imageview_favorite_genre:
-                        mListener.OnFavoriteClick(mTracks, getAdapterPosition());
-                        break;
+            switch (view.getId()) {
+                case R.id.imageview_favorite_genre:
+                    mListener.OnFavoriteClick(mTracks, getAdapterPosition());
+                    break;
 
-                    default:
-                        mListener.OnItemClick(mTracks, getAdapterPosition());
-                }
+                default:
+                    mListener.OnItemClick(mTracks, getAdapterPosition());
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.framgia.music_24.data.source;
 
+import android.graphics.Bitmap;
 import com.framgia.music_24.data.model.Discover;
 import com.framgia.music_24.data.model.Track;
 import java.util.List;
@@ -11,7 +12,8 @@ import java.util.List;
 public interface TracksDataSource {
 
     interface TrackRemoteDataSource {
-        void getTrack(String genre, String genreTitle, CallBack<List<Discover>> callBack);
+        void getTrack(String genre, String genreTitle, String type,
+                CallBack<List<Discover>> callBack);
 
         void getTrack(String genre, int limit, CallBack<List<Track>> callBack);
 
@@ -22,6 +24,16 @@ public interface TracksDataSource {
         }
 
         void downloadTrack(String title, OnDownloadListener onDownloadListener);
+
+        void convertBitmap(String url, OnConvertBitmapListener onConvertBitmapListener);
+
+        interface OnConvertBitmapListener {
+            void OnSuccess(Bitmap bitmap);
+
+            void OnError(Exception e);
+        }
+
+        void search(String query, int limit, CallBack<List<Track>> callBack);
     }
 
     interface TrackLocalDataSource {
@@ -36,5 +48,25 @@ public interface TracksDataSource {
         boolean isExistRow(Track track);
 
         Track findTrackById(String id);
+
+        void saveTrackPlayingData(Track track, String url, String type);
+
+        String getTrackUrl();
+
+        String getTrackType();
+
+        int getTrackId();
+
+        List<Track> getAllFavorite();
+
+        List<Track> getAllDownload();
+
+        void getOffLineMusic(OnGetOfflineTrackListener onGetOfflineTrackListener);
+
+        interface OnGetOfflineTrackListener {
+            void OnSuccess(List<Track> tracks);
+
+            void OnError();
+        }
     }
 }

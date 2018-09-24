@@ -42,4 +42,9 @@
         <item name="colorAccent">@android:color/white</item>
     </style>
 
+    <style name="SeekBarColor"
+        parent="Widget.AppCompat.SeekBar">
+        <item name="android:maxHeight">@dimen/dp_8</item>
+    </style>
+
 </resources>

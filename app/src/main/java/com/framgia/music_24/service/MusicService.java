@@ -245,15 +245,14 @@ public class MusicService extends Service implements OnMusicListener {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             int importance = NotificationManager.IMPORTANCE_HIGH;
             CharSequence name = getString(R.string.app_name);
-            NotificationChannel mChannel =
-                    new NotificationChannel(CHANNEL_ID_NOTIFY, name, importance);
+            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID_NOTIFY, name, importance);
             mNotification = notificationBuilder.setSmallIcon(R.drawable.ic_image_place_holder)
                     .setChannelId(CHANNEL_ID_NOTIFY)
                     .build();
             NotificationManager mNotificationManager =
                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             mNotificationManager.createNotificationChannel(mChannel);
-            mNotificationManager.notify(ID_NOTIFICATION, mNotification);
+            mNotificationManager.notify(ID_NOTIFICATION , mNotification);
         }
         startForeground(ID_NOTIFICATION, mNotification);
     }

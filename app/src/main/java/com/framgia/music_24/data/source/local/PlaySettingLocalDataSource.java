@@ -15,7 +15,7 @@ public class PlaySettingLocalDataSource implements PlaySettingDataSource {
     private static PlaySettingLocalDataSource sInstance;
     private SharedPrefsImpl mSharedPrefs;
 
-    private PlaySettingLocalDataSource(Context context) {
+    public PlaySettingLocalDataSource(Context context) {
         mSharedPrefs = SharedPrefsImpl.getInstance(context);
     }
 
@@ -32,7 +32,7 @@ public class PlaySettingLocalDataSource implements PlaySettingDataSource {
 
     @Override
     public void saveSetting(Setting setting) {
-        if (setting == null) {
+        if (setting == null){
             return;
         }
         mSharedPrefs.put(PREF_IS_SHUFFLE, setting.isShuffle());

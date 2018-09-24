@@ -38,8 +38,8 @@ public class TracksRepository {
         return sInstance;
     }
 
-    public void getTrack(String genre, String genreTitle, CallBack callBack) {
-        mRemoteDataSource.getTrack(genre, genreTitle, callBack);
+    public void getTrack(String genre, String genreTitle, String type, CallBack callBack) {
+        mRemoteDataSource.getTrack(genre, genreTitle, type, callBack);
     }
 
     public void getTrack(String genre, int limit, CallBack callBack) {
@@ -66,12 +66,52 @@ public class TracksRepository {
         return mLocalDataSource.findTrackById(id);
     }
 
+    public void updateDownload(Track track, int download, String uri) {
+        mLocalDataSource.updateDownload(track, download, uri);
+    }
+
     public void downloadTrack(String title,
             TracksDataSource.TrackRemoteDataSource.OnDownloadListener onDownloadListener) {
         mRemoteDataSource.downloadTrack(title, onDownloadListener);
     }
 
-    public void updateDownload(Track track, int download, String uri) {
-        mLocalDataSource.updateDownload(track, download, uri);
+    public void convertBitmap(String url,
+            TracksDataSource.TrackRemoteDataSource.OnConvertBitmapListener
+                    onConvertBitmapListener) {
+        mRemoteDataSource.convertBitmap(url, onConvertBitmapListener);
+    }
+
+    public void saveTrackPlayingData(Track track, String url, String type) {
+        mLocalDataSource.saveTrackPlayingData(track, url, type);
+    }
+
+    public String getTrackUrl() {
+        return mLocalDataSource.getTrackUrl();
+    }
+
+    public String getTrackType() {
+        return mLocalDataSource.getTrackType();
+    }
+
+    public int getTrackID() {
+        return mLocalDataSource.getTrackId();
+    }
+
+    public List<Track> getAllFavorite() {
+        return mLocalDataSource.getAllFavorite();
+    }
+
+    public List<Track> getAllDownload() {
+        return mLocalDataSource.getAllDownload();
+    }
+
+    public void search(String query, int limit, CallBack<List<Track>> callBack) {
+        mRemoteDataSource.search(query, limit, callBack);
+    }
+
+    public void getAllOfflineTrack(
+            TracksDataSource.TrackLocalDataSource.OnGetOfflineTrackListener
+                    onGetOfflineTrackListener) {
+        mLocalDataSource.getOffLineMusic(onGetOfflineTrackListener);
     }
 }

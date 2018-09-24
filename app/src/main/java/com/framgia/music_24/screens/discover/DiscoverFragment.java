@@ -2,10 +2,13 @@ package com.framgia.music_24.screens.discover;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -34,19 +37,19 @@ public class DiscoverFragment extends Fragment
     public static final String TAG = "DiscoverFragment";
     public static final String ARGUMENT_POSITION_ITEM = "ARGUMENT_POSITION_ITEM";
     public static final String ARGUMENT_TITLE_ITEM = "ARGUMENT_TITLE_ITEM";
+    private FragmentActivity mContext;
     private DiscoverContract.Presenter mPresenter;
     private RecyclerView mRecyclerAllGenders;
     private List<Discover> mDiscovers;
-    private FragmentActivity mContext;
 
     public DiscoverFragment() {
 
     }
 
-    public static DiscoverFragment newInstance(ArrayList<Discover> discovers) {
+    public static DiscoverFragment newInstance(List<Discover> discovers) {
         DiscoverFragment fragment = new DiscoverFragment();
         Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(ARGUMENT_GENRE, discovers);
+        bundle.putParcelableArrayList(ARGUMENT_GENRE, (ArrayList<? extends Parcelable>) discovers);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -55,6 +58,9 @@ public class DiscoverFragment extends Fragment
     public void onAttach(Activity activity) {
         mContext = (FragmentActivity) activity;
         super.onAttach(activity);
+        if (((AppCompatActivity) mContext).getSupportActionBar() != null) {
+            ((AppCompatActivity) mContext).getSupportActionBar().show();
+        }
     }
 
     @Override
@@ -110,12 +116,14 @@ public class DiscoverFragment extends Fragment
     @Override
     public void OnGenreClick(int position, String genre) {
         DisplayUtils.addFragment(mContext.getSupportFragmentManager(),
-                GenreFragment.newInstance(position, genre), R.id.frame_discover, GenreFragment.TAG);
+                GenreFragment.newInstance(position, mDiscovers.get(position)), R.id.frame_discover, GenreFragment.TAG);
     }
 
     @Override
-    public void OnTrackClick(List<Track> tracks, int position) {
+    public void OnTrackClick(List<Track> tracks, String type, int position) {
+        mContext.getSupportFragmentManager().popBackStack (PlayMusicFragment.TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);;
         DisplayUtils.addFragment(mContext.getSupportFragmentManager(),
-                PlayMusicFragment.newInstance(tracks, position), R.id.coordinator_add_play, PlayMusicFragment.TAG);
+                PlayMusicFragment.newInstance(tracks, type, position, false, false),
+                R.id.coordinator_add_play, PlayMusicFragment.TAG);
     }
 }

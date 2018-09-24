@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/white"
     android:fitsSystemWindows="true"
+    android:clickable="true"
     android:theme="@style/PlayTheme"
     tools:context=".screens.play.PlayMusicFragment">
 
@@ -33,6 +34,7 @@
             android:layout_marginTop="@dimen/dp_20"
             android:ellipsize="end"
             android:gravity="center"
+            android:maxLines="2"
             android:textSize="@dimen/sp_20"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -80,6 +82,7 @@
             android:layout_width="@dimen/dp_256"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_24"
+            android:secondaryProgressTint="@android:color/white"
             app:layout_constraintEnd_toStartOf="@+id/textview_time_total"
             app:layout_constraintStart_toEndOf="@+id/textview_time_running"
             app:layout_constraintTop_toBottomOf="@+id/imageview_download"/>
@@ -88,7 +91,7 @@
             android:id="@+id/textview_time_running"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dp_8"
+            android:layout_marginLeft="@dimen/dp_16"
             android:layout_marginTop="@dimen/dp_24"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageview_favorite_genre"/>
@@ -97,7 +100,7 @@
             android:id="@+id/textview_time_total"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/dp_8"
+            android:layout_marginRight="@dimen/dp_16"
             android:layout_marginTop="@dimen/dp_24"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageview_download"/>
@@ -111,7 +114,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textview_time_running"
-            app:srcCompat="@drawable/ic_shuffle"/>
+            app:srcCompat="@drawable/ic_shuffle_off"/>
 
         <ImageView
             android:id="@+id/imageview_previous"
@@ -130,13 +133,13 @@
             android:layout_width="@dimen/dp_32"
             android:layout_height="@dimen/dp_32"
             android:layout_marginBottom="@dimen/dp_8"
-            app:srcCompat="@drawable/ic_pause"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="@string/bias_avatar_navigation"
             app:layout_constraintStart_toEndOf="@+id/imageview_previous"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textview_time_total"/>
+            app:layout_constraintTop_toBottomOf="@+id/textview_time_total"
+            app:srcCompat="@drawable/ic_pause"/>
 
         <ImageView
             android:id="@+id/imageview_next"
@@ -161,7 +164,34 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imageview_next"
             app:layout_constraintTop_toBottomOf="@+id/textview_time_total"
-            app:srcCompat="@drawable/ic_loop"/>
+            app:srcCompat="@drawable/ic_loop_off"/>
+
+        <ImageView
+            android:id="@+id/imageview_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp_16"
+            android:layout_marginRight="@dimen/dp_8"
+            android:layout_marginTop="@dimen/dp_16"
+            android:tint="@android:color/white"
+            app:layout_constraintEnd_toStartOf="@+id/imageview_playlist"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_back"/>
+
+        <ImageView
+            android:id="@+id/imageview_playlist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/dp_8"
+            android:layout_marginRight="@dimen/dp_16"
+            android:layout_marginTop="@dimen/dp_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_playlist"/>
 
     </android.support.constraint.ConstraintLayout>
 

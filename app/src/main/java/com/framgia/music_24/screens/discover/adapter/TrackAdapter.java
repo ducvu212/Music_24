@@ -24,12 +24,13 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
 
     private Context mContext;
     private List<Track> mTracks;
+    private String mType;
     private LayoutInflater mInflater;
     private OnItemClickListener mListener;
 
-    public TrackAdapter(Context context, List<Track> tracks,
-            OnItemClickListener OnItemClickListener) {
+    TrackAdapter(Context context, List<Track> tracks, String type, OnItemClickListener OnItemClickListener) {
         mContext = context;
+        mType = type;
         mTracks = tracks;
         mListener = OnItemClickListener;
     }
@@ -46,7 +47,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
 
     @Override
     public void onBindViewHolder(@NonNull TrackViewHolder trackViewHolder, int i) {
-        trackViewHolder.bindData(mContext, mTracks, mListener);
+        trackViewHolder.bindData(mContext, mTracks, mType, mListener);
     }
 
     @Override
@@ -59,6 +60,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
         private TextView mTextViewName;
         private TextView mTextViewSinger;
         private ImageView mImageMusic;
+        private String mType;
         private ConstraintLayout mLayout;
         private OnItemClickListener mListener;
         private List<Track> mTracks;
@@ -72,9 +74,10 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
             mLayout.setOnClickListener(this);
         }
 
-        void bindData(Context context, List<Track> tracks,
+        void bindData(Context context, List<Track> tracks, String type,
                 OnItemClickListener OnItemClickListener) {
             mTracks = tracks;
+            mType = type;
             mTextViewName.setText(tracks.get(getAdapterPosition()).getTitle());
             mTextViewSinger.setText(tracks.get(getAdapterPosition()).getUser().getFullName());
             loadImage(context, mTracks);
@@ -95,12 +98,12 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
         @Override
         public void onClick(View view) {
             if (mListener != null) {
-                mListener.OnTrackClick(mTracks, getAdapterPosition());
+                mListener.OnTrackClick(mTracks, mType, getAdapterPosition());
             }
         }
     }
 
     public interface OnItemClickListener {
-        void OnTrackClick(List<Track> tracks, int position);
+        void OnTrackClick(List<Track> tracks, String type, int position);
     }
 }

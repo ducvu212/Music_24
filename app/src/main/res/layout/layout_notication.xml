@@ -73,6 +73,7 @@
                 android:layout_marginTop="@dimen/dp_8"
                 app:srcCompat="@drawable/ic_previous"/>
 
+
             <ImageView
                 android:id="@+id/imageview_notify_pause"
                 android:layout_width="@dimen/dp_32"
@@ -99,6 +100,9 @@
                 android:layout_marginRight="@dimen/dp_16"
                 android:layout_marginTop="@dimen/dp_8"
                 app:srcCompat="@drawable/ic_clear"/>
+
         </LinearLayout>
+
     </LinearLayout>
+
 </LinearLayout>

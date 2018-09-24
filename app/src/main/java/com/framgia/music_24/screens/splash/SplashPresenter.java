@@ -1,6 +1,7 @@
 package com.framgia.music_24.screens.splash;
 
 import com.framgia.music_24.data.model.Discover;
+import com.framgia.music_24.data.model.Track;
 import com.framgia.music_24.data.repository.TracksRepository;
 import com.framgia.music_24.data.source.CallBack;
 import java.util.List;
@@ -16,7 +17,7 @@ public class SplashPresenter implements SplashContract.Presenter {
     private SplashContract.View mView;
     private TracksRepository mTracksRepository;
 
-    public SplashPresenter(TracksRepository repository) {
+    SplashPresenter(TracksRepository repository) {
         mTracksRepository = checkNotNull(repository);
     }
 
@@ -36,9 +37,9 @@ public class SplashPresenter implements SplashContract.Presenter {
     }
 
     @Override
-    public void loadDataGenre(final String genre, final String genderTitle,
+    public void loadDataGenre(final String genre, final String genderTitle, final String type,
             final List<Discover> datas) {
-        mTracksRepository.getTrack(genre, genderTitle, new CallBack<List<Discover>>() {
+        mTracksRepository.getTrack(genre, genderTitle, type, new CallBack<List<Discover>>() {
             @Override
             public void onSuccess(List<Discover> discovers) {
                 datas.addAll(discovers);

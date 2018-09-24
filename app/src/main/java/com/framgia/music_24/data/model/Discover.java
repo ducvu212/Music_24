@@ -11,14 +11,20 @@ public class Discover implements Parcelable {
 
     private String mGender;
     private List<Track> mTracks;
+    private String mType;
 
     public String getGender() {
         return mGender;
     }
 
-    public Discover(Builder discoverBuilder) {
+    public String getType() {
+        return mType;
+    }
+
+    Discover(Builder discoverBuilder) {
         mGender = discoverBuilder.mGender;
         mTracks = discoverBuilder.mTracks;
+        mType = discoverBuilder.mType;
     }
 
     public static final Parcelable.Creator<Discover> CREATOR = new Parcelable.Creator<Discover>() {
@@ -33,9 +39,10 @@ public class Discover implements Parcelable {
         }
     };
 
-    protected Discover(Parcel in) {
+    private Discover(Parcel in) {
         mGender = in.readString();
         mTracks = in.createTypedArrayList(Track.CREATOR);
+        mType = in.readString();
     }
 
     public List<Track> getTracks() {
@@ -51,11 +58,13 @@ public class Discover implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mGender);
         dest.writeTypedList(mTracks);
+        dest.writeString(mType);
     }
 
     public static final class Builder {
 
         private String mGender;
+        private String mType;
         private List<Track> mTracks;
 
         public Builder() {
@@ -63,6 +72,11 @@ public class Discover implements Parcelable {
 
         public Builder mGender(String gender) {
             mGender = gender;
+            return this;
+        }
+
+        public Builder mType(String type) {
+            mType = type;
             return this;
         }
 

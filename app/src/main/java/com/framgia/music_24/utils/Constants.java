@@ -15,6 +15,10 @@ public final class Constants {
     public static final String QUERY_LIMIT = "&limit=";
     public static final int LIMIT = 20;
 
+    //Search
+    public static final String SEARCH= "search/tracks?q=";
+    public static final String QUERY = "query";
+
     //Genre
     public static final String QUERY_GENRE_ALL_MUSIC = "all-music";
     public static final String QUERY_GENRE_ALL_AUDIO = "all-audio";

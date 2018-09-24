@@ -1,5 +1,6 @@
 package com.framgia.music_24.data.model;
 
+import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 import org.json.JSONException;
@@ -45,6 +46,9 @@ public class Track implements Parcelable {
     private int mDownloaded;
     private User mUser;
     private int mFavorite;
+    private String mDownloadUri;
+    private Bitmap mBitmap;
+    private boolean mIsOffline;
 
     public Track(JSONObject jsonObject) throws JSONException {
         mArtworkUrl = jsonObject.getString(TRACK_ARTWORK_URL);
@@ -73,6 +77,9 @@ public class Track implements Parcelable {
         mFavorite = trackBuilder.mFavorite;
         mUser = trackBuilder.mUser;
         mUrl = trackBuilder.mUrl;
+        mDownloadUri = trackBuilder.mDownloadUri;
+        mBitmap = trackBuilder.mBitmap;
+        mIsOffline = trackBuilder.mIsOffline;
     }
 
     public String getArtworkUrl() {
@@ -85,6 +92,10 @@ public class Track implements Parcelable {
 
     public String getDescription() {
         return mDescription;
+    }
+
+    public void setId(int id) {
+        mId = id;
     }
 
     protected Track(Parcel in) {
@@ -108,6 +119,14 @@ public class Track implements Parcelable {
 
     public String getLastModified() {
         return mLastModified;
+    }
+
+    public String getDownloadUri() {
+        return mDownloadUri;
+    }
+
+    public void setDownloadUri(String downloadUri) {
+        mDownloadUri = downloadUri;
     }
 
     public String getTitle() {
@@ -148,6 +167,22 @@ public class Track implements Parcelable {
 
     public int getFavorite() {
         return mFavorite;
+    }
+
+    public Bitmap getBitmap() {
+        return mBitmap;
+    }
+
+    public void setBitmap(Bitmap bitmap) {
+        mBitmap = bitmap;
+    }
+
+    public boolean isOffline() {
+        return mIsOffline;
+    }
+
+    public void setOffline(boolean offline) {
+        mIsOffline = offline;
     }
 
     static class JsonParamKey {
@@ -197,12 +232,15 @@ public class Track implements Parcelable {
         private String mTitle;
         private String mDisplayDate;
         private String mUrl;
+        private String mDownloadUri;
         private int mDuration;
         private int mFullDuration;
         private int mId;
         private int mDownloaded;
         private int mFavorite;
         private User mUser;
+        private Bitmap mBitmap;
+        private boolean mIsOffline;
 
         public TrackBuilder() {
         }
@@ -252,6 +290,16 @@ public class Track implements Parcelable {
             return this;
         }
 
+        public TrackBuilder Bitmap(Bitmap bitmap) {
+            mBitmap = bitmap;
+            return this;
+        }
+
+        public TrackBuilder Offline(boolean isOffline) {
+            mIsOffline = isOffline;
+            return this;
+        }
+
         public TrackBuilder Downloaded(int downloaded) {
             mDownloaded = downloaded;
             return this;
@@ -269,6 +317,11 @@ public class Track implements Parcelable {
 
         public TrackBuilder Url(String url) {
             mUrl = url;
+            return this;
+        }
+
+        public TrackBuilder DownloadUri(String uri) {
+            mDownloadUri = uri;
             return this;
         }
 
